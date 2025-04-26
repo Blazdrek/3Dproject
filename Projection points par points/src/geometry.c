@@ -13,7 +13,7 @@ typedef point vector;
 struct display_s {int height;int width;};
 typedef struct display_s display;
 
-struct point_2d_s {double x;double y};
+struct point_2d_s {double x;double y;};
 typedef struct point_2d_s point_2d;
 typedef point_2d vector_2d;
 
@@ -44,12 +44,12 @@ point_2d projection(point p,int width,int height,double FOV){
     double alpha_y = z/x;
 
     //Deuxieme étape : projection sur l'ecran
-    double alpha_p_x = ((double) width * alpha_x / 2.0 * tan(FOV/2.0));
-    double alpha_p_x = ((double) height * alpha_x / 2.0 * tan(FOV/2.0));
+    double alpha_p_x = ((double) width * alpha_x / (2.0 * tan(FOV/2.0)));
+    double alpha_p_y = ((double) height * alpha_x / (2.0 * tan(FOV/2.0)));
     
-    point_2d p;
-    p.x = alpha_p_x;
-    p.y = alpha_p_y;
-    return p;
+    point_2d n_p;
+    n_p.x = alpha_p_x;
+    n_p.y = alpha_p_y;
+    return n_p;
 
 }
