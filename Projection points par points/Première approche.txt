@@ -1,0 +1,4 @@
+Dans cette première approche , le joueur ne se déplace pas réellement . C'est la carte qui se déplace autour de lui .
+A chaque déplacement , le joueur applique en réalité un déplacement opposé a tout les objets de la scene .
+Pareil pour les rotations , on applique a toute les coordonnées de tout les objets une rotation contraire .
+
