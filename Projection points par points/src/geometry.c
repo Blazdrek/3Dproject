@@ -40,12 +40,16 @@ point_2d projection(point p,int width,int height,double FOV){
     double z = p.z;
 
     //Premiere étape : projection sur le plan de distance 1
-    double x1 = y/x;
-    double y1 = z/x;
+    double alpha_x = y/x;
+    double alpha_y = z/x;
 
     //Deuxieme étape : projection sur l'ecran
+    double alpha_p_x = ((double) width * alpha_x / 2.0 * tan(FOV/2.0));
+    double alpha_p_x = ((double) height * alpha_x / 2.0 * tan(FOV/2.0));
     
-    
-
+    point_2d p;
+    p.x = alpha_p_x;
+    p.y = alpha_p_y;
+    return p;
 
 }
