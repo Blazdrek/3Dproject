@@ -1,2 +1,2 @@
 "# 3Dproject" 
-![image](Projection points par points/Shéma explicatif.png "Image présentation")
+![image](Projection points par points/Shéma explicatif.png)
