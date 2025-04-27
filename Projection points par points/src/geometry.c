@@ -53,3 +53,37 @@ point_2d projection(point p,int width,int height,double FOV){
     return n_p;
 
 }
+point_2d projection_v2(point p,int width,int height,double FOV){
+    double x = p.x;
+    double y = p.y;
+    double z = p.z;
+
+    double alpha = 1 / (2 * sin(FOV/2));
+    double x_prime = y*alpha/x;
+    double y_prime = z*alpha/x;
+
+    double x_seconde = width*x_prime;
+    double y_seconde = height*y_prime;
+
+    point_2d n_p;
+    n_p.x = x_seconde + width/2;
+    n_p.y = y_seconde + height/2;
+    return n_p;
+
+}
+
+point* cube(double x,double y, double z,double side_len){
+    point* liste_points = malloc(sizeof(point)*8);
+    int indice = 0;
+    for (int i = 0;i<2;i++){
+        for (int j = 0;j<2;j++){
+            for (int k = 0;k<2;k++){
+                liste_points[indice].x = x + (i * side_len) ;
+                liste_points[indice].y = y + (j * side_len) ;
+                liste_points[indice].z = z + (k * side_len );
+                indice++;
+            }
+        }
+    }
+    return liste_points;
+}
