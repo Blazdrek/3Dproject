@@ -9,6 +9,8 @@ struct point_s {double x;double y;double z;};
 typedef struct point_s point;
 typedef point vector;
 
+struct object_s {int nb_points ; point* points;};
+typedef struct object_s object;
 
 struct display_s {int height;int width;};
 typedef struct display_s display;
@@ -72,7 +74,7 @@ point_2d projection_v2(point p,int width,int height,double FOV){
 
 }
 
-point* cube(double x,double y, double z,double side_len){
+object make_cube(double x,double y, double z,double side_len){
     point* liste_points = malloc(sizeof(point)*8);
     int indice = 0;
     for (int i = 0;i<2;i++){
@@ -85,5 +87,8 @@ point* cube(double x,double y, double z,double side_len){
             }
         }
     }
-    return liste_points;
+    object c;
+    c.nb_points = 8;
+    c.points = liste_points;
+    return c;
 }

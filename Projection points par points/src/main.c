@@ -3,9 +3,9 @@
 #include <stdbool.h>
 #include "geometry.h"
 
-void show_points(int len,point* liste_p,SDL_Window* window,SDL_Renderer* renderer,double FOV){
-    for (int i = 0;i<len;i++){
-        point p = liste_p[i];
+void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV){
+    for (int i = 0;i<ob.nb_points;i++){
+        point p = ob.points[i];
         if (p.x > 0){
             int width;
             int height;
@@ -18,19 +18,19 @@ void show_points(int len,point* liste_p,SDL_Window* window,SDL_Renderer* rendere
     }
 }
 
-void move(int len,point* liste_p,double x,double y,double z){
-    for (int i = 0;i < len;i++){
-        liste_p[i].x = liste_p[i].x + x;
-        liste_p[i].y = liste_p[i].y + y;
-        liste_p[i].z = liste_p[i].z + z;
+void move(object ob,double x,double y,double z){
+    for (int i = 0;i < ob.nb_points;i++){
+        ob.points[i].x = ob.points[i].x + x;
+        ob.points[i].y = ob.points[i].y + y;
+        ob.points[i].z = ob.points[i].z + z;
     }
     
 }
 
-void rotate_z(int len,point* liste_p,double angle){
-    for (int i = 0; i < len; i++){
-        liste_p[i].x = liste_p[i].x * cos(angle) - liste_p[i].y * sin(angle);
-        liste_p[i].y = liste_p[i].x * sin(angle) + liste_p[i].y * cos(angle);
+void rotate_z(object ob,double angle){
+    for (int i = 0; i < ob.nb_points; i++){
+        ob.points[i].x = ob.points[i].x * cos(angle) - ob.points[i].y * sin(angle);
+        ob.points[i].y = ob.points[i].x * sin(angle) + ob.points[i].y * cos(angle);
     }
 }
 
@@ -47,10 +47,9 @@ int main(){
 
 
     
-    int nb_points = 8;
-    point* liste_points = cube(100,-6,0.0,12);
-    for (int i = 0;i<8;i++){
-        point_2d pos = projection_v2(liste_points[i],width,height,1.5);;
+    object cube = make_cube(100,-6,0,12);
+    for (int i = 0;i<cube.nb_points;i++){
+        point_2d pos = projection_v2(cube.points[i],width,height,1.5);
         printf("%f %f \n ",pos.x,pos.y);
     }
     bool running = true;
@@ -61,42 +60,42 @@ int main(){
                 SDL_Keycode key = event.key.keysym.sym;
                 if (key == SDLK_ESCAPE) running = false;
                 if (key == SDLK_z) {
-                    printf(" FOREWARD \n");
+                    printf("FOREWARD \n");
                     fflush(stdout);
-                    move(8,liste_points,-2,0,0);
+                    move(cube,-2,0,0);
                 }
                 if (key == SDLK_s) {
                     printf("BACKWARD \n");
                     fflush(stdout);
-                    move(8,liste_points,2,0,0);
+                    move(cube,2,0,0);
                     
                 }
                 if (key == SDLK_d) {
                     printf("RIGHT \n");
                     fflush(stdout);
-                    move(8,liste_points,0,-2,0);
+                    move(cube,0,-2,0);
                 }
                 if (key == SDLK_q) {
                     printf("LEFT \n");
                     fflush(stdout);
-                    move(8,liste_points,0,2,0);
+                    move(cube,0,2,0);
                 }
                 if (key == SDLK_a) {
                     printf("ROTATE LEFT \n");
                     fflush(stdout);
-                    rotate_z(8,liste_points,0.2);
+                    rotate_z(cube,0.02);
                 }
                 if (key == SDLK_e) {
                     printf("ROTATE RIGHT \n");
                     fflush(stdout);
-                    rotate_z(8,liste_points,-0.2);
+                    rotate_z(cube,-0.02);
                 }
             }
         }
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        show_points(nb_points,liste_points,window,renderer,1.5);
+        show_obj(cube,window,renderer,1.5);
         
         SDL_RenderPresent(renderer);
 
