@@ -9,7 +9,7 @@ struct point_s {double x;double y;double z;};
 typedef struct point_s point;
 typedef point vector;
 
-struct object_s {int nb_points ; point* points;};
+struct object_s {int nb_points ; point* points; point** graph};
 typedef struct object_s object;
 
 struct display_s {int height;int width;};
@@ -35,26 +35,6 @@ double scalaire_2d(vector_2d a, vector_2d b){
     return (a.x * b.x ) + (a.y * b.y);
 }
 
-
-point_2d projection(point p,int width,int height,double FOV){
-    double x = p.x;
-    double y = p.y;
-    double z = p.z;
-
-    //Premiere étape : projection sur le plan de distance 1
-    double alpha_x = y/x;
-    double alpha_y = z/x;
-
-    //Deuxieme étape : projection sur l'ecran
-    double alpha_p_x = ((double) width * alpha_x / (2.0 * tan(FOV/2.0)));
-    double alpha_p_y = ((double) height * alpha_x / (2.0 * tan(FOV/2.0)));
-    
-    point_2d n_p;
-    n_p.x = alpha_p_x;
-    n_p.y = alpha_p_y;
-    return n_p;
-
-}
 point_2d projection_v2(point p,int width,int height,double FOV){
     double x = p.x;
     double y = p.y;
@@ -76,17 +56,21 @@ point_2d projection_v2(point p,int width,int height,double FOV){
 
 object make_cube(double x,double y, double z,double side_len){
     point* liste_points = malloc(sizeof(point)*8);
+    point** graph = malloc(sizeof(point*)*8);
+    for (int i = 0; i<8;i++) graph[i] = malloc(sizeof(point)*3);
     int indice = 0;
-    for (int i = 0;i<2;i++){
-        for (int j = 0;j<2;j++){
-            for (int k = 0;k<2;k++){
-                liste_points[indice].x = x + (i * side_len) ;
-                liste_points[indice].y = y + (j * side_len) ;
-                liste_points[indice].z = z + (k * side_len );
-                indice++;
-            }
-        }
+    for (int i = 0;i<8;i++){
+         int nz = i %2;
+        int ny = (i/2) % 2;
+        int nx = (i/4) %2 ;
+        liste_points[i].x = nx;
+        liste_points[i].y = ny;
+        liste_points[i].z = nz;
+        
+
+
     }
+
     object c;
     c.nb_points = 8;
     c.points = liste_points;

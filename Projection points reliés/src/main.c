@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "geometry.h"
+#include "geometry_points_relies.h"
 
 void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV){
     for (int i = 0;i<ob.nb_points;i++){
