@@ -48,7 +48,10 @@ int main(){
 
     
     object cube = make_cube(100,-6,-6,12);
+
     for (int i = 0;i<cube.nb_points;i++){
+        printf("%d | %d\n",i,cube.nb_points);
+        fflush(stdout);
         point_2d pos = projection_v2(cube.points[i],width,height,1.5);
         printf("%f %f \n ",pos.x,pos.y);
     }
