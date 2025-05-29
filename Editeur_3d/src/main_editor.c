@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
-#include "geometry_points_relies.h"
+#include <math.h>
+#include "geometry_editor.h"
 
 void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV){
     point_2d* coords = malloc(sizeof(point_2d)*ob.nb_points);
@@ -26,7 +27,8 @@ void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV){
             }
 
             point voisin = ob.points[indice];
-            if (voisin.x > 0 || p.x > 0){
+            double tan_fov = tan(FOV/2);
+            if ((voisin.x > 0 && voisin.y/voisin.x < tan_fov)  || (p.x > 0 && p.y/p.x < tan_fov)){
                 SDL_RenderDrawLine(renderer, coords[i].x, coords[i].y,coords[indice].x, coords[indice].y);
             }
         }
