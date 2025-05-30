@@ -28,6 +28,8 @@ point_2d projection(point p,int width,int height,double FOV);
 point_2d projection_v2(point p,int width,int height,double FOV);
 object make_square(double x,double y,double z,double side_len);
 object make_cube(double x,double y, double z,double side_len);
+object open_obj(char* filename);
+object save_obj(object obj,char* filename);
 
 
 #endif

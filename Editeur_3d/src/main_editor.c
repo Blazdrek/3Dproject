@@ -17,15 +17,6 @@ void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV){
         point p = ob.points[i];
         for (int j = 1; j<=ob.graph[i][0]; j++){
             int indice = ob.graph[i][j];
-
-
-
-            if (indice > ob.nb_points){
-                printf("Ouhou ca coince %d %d",i,j);
-                fflush(stdout);
-                assert(false);
-            }
-
             point voisin = ob.points[indice];
             double tan_fov = tan(FOV/2);
             if ((voisin.x > 0 && voisin.y/voisin.x < tan_fov)  || (p.x > 0 && p.y/p.x < tan_fov)){
@@ -50,15 +41,10 @@ int main(){
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
 
+    open_obj("assets/coucou");
+
     
     object cube = (make_cube(100,0,-6,12));
-    for (int i = 0;i < cube.nb_points;i++){
-        printf("%d | %d\n",i,cube.nb_points);
-        fflush(stdout);
-        point_2d pos = projection_v2(cube.points[i],width,height,1.5);
-        printf("%f %f \n ",pos.x,pos.y);
-        fflush(stdout);
-    }
     bool running = true;
     SDL_Event event;
     while (running){

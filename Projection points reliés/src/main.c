@@ -16,23 +16,16 @@ void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV){
         point p = ob.points[i];
         for (int j = 1; j<=ob.graph[i][0]; j++){
             int indice = ob.graph[i][j];
-
-
-
-            if (indice > ob.nb_points){
-                printf("Ouhou ca coince %d %d",i,j);
-                fflush(stdout);
-                assert(false);
-            }
-
             point voisin = ob.points[indice];
-            if (voisin.x > 0 || p.x > 0){
+            double tan_fov = tan(FOV/2);
+            if ((voisin.x > 0 && voisin.y/voisin.x < tan_fov)  || (p.x > 0 && p.y/p.x < tan_fov)){
                 SDL_RenderDrawLine(renderer, coords[i].x, coords[i].y,coords[indice].x, coords[indice].y);
             }
         }
     }
     free(coords);
 }
+
 
 
 

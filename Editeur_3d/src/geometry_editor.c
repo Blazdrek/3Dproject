@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <SDL2/SDL.h>
+#include <assert.h>
 #include <stdbool.h>
 #include <math.h>
 
@@ -145,7 +147,6 @@ object make_cube(double x,double y, double z,double side_len){
         liste_points[i+4] = c2.points[i];
         for (int j = 1;j <=c2.graph[i][0];j++){
             graph[i+4][j] = c2.graph[i][j] + 4;
-            printf("%d %d \n",i+4,c2.graph[i][j]+4);
         }
         graph[i+4][3] = i;
     }
@@ -154,9 +155,6 @@ object make_cube(double x,double y, double z,double side_len){
     c.nb_points = 8;
     c.points = liste_points;
     c.graph = graph;
-
-    printf("C'est envoyé");
-    fflush(stdout);
 
     return c;
 }
@@ -182,5 +180,16 @@ point_2d projection_v2(point p,int width,int height,double FOV){
 
 }
 
+object open_obj(char* filename){
+    FILE* f1 = fopen(filename,"r");
+    if (f1==NULL){
+        fprintf(stderr, "---Error (open_obj) : Can't open \"%s\" \n",filename);
+        exit(1);
+    }
+    
+    
 
+    fclose(f1);
+}
+object save_obj(object obj,char* filename,char* path);
 

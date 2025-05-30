@@ -6,5 +6,5 @@ $(TARGET) : $(SRC)
 	clear
 	gcc $(SRC) $(CFLAGS) -o bin/$(TARGET)
 	./bin/$(TARGET)
-	echo "<Programme lancé>"
+	@echo "\n<Programme lancé avec succès>\n"
 
