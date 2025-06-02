@@ -24,10 +24,12 @@ double scalaire_2d(vector_2d a, vector_2d b);
 void move(object ob,double x,double y,double z);
 void rotate_z(object ob,double angle);
 void rotate_y(object ob,double angle);
-point_2d projection(point p,int width,int height,double FOV);
-point_2d projection_v2(point p,int width,int height,double FOV);
+void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV);
+void print_coords(object ob,int width,int height,double FOV);
+point_2d projetction(point p,int width,int height,double FOV);
 object make_square(double x,double y,double z,double side_len);
 object make_cube(double x,double y, double z,double side_len);
+
 
 
 #endif

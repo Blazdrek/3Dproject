@@ -3,8 +3,6 @@
 #include <stdbool.h>
 #include <math.h>
 
-
-
 struct point_s {
     double x;
     double y;
@@ -12,6 +10,12 @@ struct point_s {
 };
 typedef struct point_s point;
 typedef point vector;
+
+struct player_s {
+    point* coord;
+    double angle_y;
+    double angle_z;
+};
 
 struct object_s {
     int nb_points;
@@ -163,8 +167,11 @@ object make_cube(double x,double y, double z,double side_len){
 
 
 
-point_2d projection_v2(point p,int width,int height,double FOV){
-    double x = p.x;
+point_2d projetction(point p,int width,int height,double FOV){
+    double x;
+    if (p.x < 0){
+        x = -p.x;
+    } else  x = p.x;
     double y = p.y;
     double z = p.z;
 
@@ -182,3 +189,32 @@ point_2d projection_v2(point p,int width,int height,double FOV){
 
 }
 
+void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV){
+    point_2d* coords = malloc(sizeof(point_2d)*ob.nb_points);
+    int width;
+    int height;
+    SDL_GetWindowSize(window,&width,&height);
+    for (int i = 0; i<ob.nb_points; i++) coords[i] = projetction(ob.points[i],width,height,FOV);
+
+
+    for (int i = 0; i<ob.nb_points; i++) {
+        point p = ob.points[i];
+        for (int j = 1; j<=ob.graph[i][0]; j++){
+            int indice = ob.graph[i][j];
+            point voisin = ob.points[indice];
+            double tan_fov = tan(FOV/2);
+            if ((voisin.x > 0 && voisin.y/voisin.x < tan_fov)  || (p.x > 0 && p.y/p.x < tan_fov)){
+                SDL_RenderDrawLine(renderer, coords[i].x, coords[i].y,coords[indice].x, coords[indice].y);
+            }
+        }
+    }
+    free(coords);
+}
+
+void print_coords(object ob,int width,int height,double FOV){
+     for (int i = 0; i<ob.nb_points; i++) {
+        point p = ob.points[i];
+        point_2d p2d= projetction(p,width,height,FOV);
+        printf("point n%d : (%f,%f,%f) -> (%d,%d)\n",i,p.x,p.y,p.z,(int)p2d.x,(int)p2d.y);
+    }
+}
