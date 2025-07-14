@@ -15,7 +15,11 @@ struct player_s {
     point* coord;
     double angle_y;
     double angle_z;
+    double FOV;
+    double tanHalf_Fov;
+    SDL_Renderer* renderer;
 };
+typedef struct player_s player;
 
 struct object_s {
     int nb_points;
@@ -49,13 +53,26 @@ typedef struct plane_s plane;
 
 
 
-///* FONCTIONS *///
+///* FUNCTIONS *///
 
 
 
 
+player* create_player(double FOV,SDL_Renderer* renderer){
+    player* p = malloc(sizeof(player));
+    p->FOV = FOV;
+    p->tanHalf_Fov = tan(FOV/2);
+    p->renderer = renderer;
+    return p;
+}
 
-// Distance entre deux points
+//Absolute Value for double var
+double d_abs(double x){
+    if (x < 0) return -x;
+    return x;
+}
+
+//Distance between 2points
 double dist(point a,point b){
     double x = (a.x - b.x);
     double y = (a.y - b.y);
@@ -63,14 +80,17 @@ double dist(point a,point b){
     return sqrt(x*x + y*y + z*z);
 }
 
-double scalaire(vector a,vector b){
+//Scalar product
+double scalar(vector a,vector b){
     return (a.x * b.x ) + (a.y * b.y) + (a.z * b.z);
 }
 
-double scalaire_2d(vector_2d a, vector_2d b){
+//Scalar with 2d_vecgtor
+double scalar_2d(vector_2d a, vector_2d b){
     return (a.x * b.x ) + (a.y * b.y);
 }
 
+//Pick orthogonal vector from a plane
 vector get_orthogonal(plane p){
     vector v;
     v.x = p.a;
@@ -81,6 +101,9 @@ vector get_orthogonal(plane p){
 }
 
 
+///Object Moves
+
+//Just adds x y z to currents object coords
 void move(object ob,double x,double y,double z){
     for (int i = 0;i < ob.nb_points;i++){
         ob.points[i].x = ob.points[i].x + x;
@@ -90,6 +113,7 @@ void move(object ob,double x,double y,double z){
     
 }
 
+//Rotation z_axe centered , true rotation ( means that it's same axe for every single object)
 void rotate_z(object ob,double angle){
     for (int i = 0; i < ob.nb_points; i++){
         ob.points[i].x = ob.points[i].x * cos(angle) - ob.points[i].y * sin(angle);
@@ -97,6 +121,7 @@ void rotate_z(object ob,double angle){
     }
 }
 
+//Rotation y_axe centered , true rotation ( same as b4 )
 void rotate_y(object ob,double angle){
     for (int i = 0; i < ob.nb_points; i++){
         ob.points[i].z = ob.points[i].z * cos(angle) - ob.points[i].x * sin(angle);
@@ -104,6 +129,53 @@ void rotate_y(object ob,double angle){
     }
 }
 
+//Screen projecting , converts 3d coords into 2d coords , simulating perspective
+//(0,0) Screen center , arbitrary choice . 
+point_2d projection(point p,int width,int height,player* pl){
+    double x = p.x;
+    double y = p.y;
+    double z = p.z;
+
+    double alpha = 1 / (2 * pl->tanHalf_Fov);
+    double x_prime = y*alpha/x;
+    double y_prime = z*alpha/x;
+
+    double x_seconde = width*x_prime;
+    double y_seconde = height*y_prime;
+
+    point_2d n_p;
+    n_p.x = x_seconde + width/2;
+    n_p.y = height - (y_seconde + height/2);
+    return n_p;
+
+}
+
+//Draw the object on a given renderer , with a given FOV ( SDL_Window only used to pick up height and width )
+void show_obj(object ob,SDL_Window* window,player* p1){
+    point_2d* coords = malloc(sizeof(point_2d)*ob.nb_points);
+    int width;
+    int height;
+    SDL_GetWindowSize(window,&width,&height);
+    for (int i = 0; i<ob.nb_points; i++) coords[i] = projection(ob.points[i],width,height,p1);
+
+
+    for (int i = 0; i<ob.nb_points; i++) {
+        point p = ob.points[i];
+        for (int j = 1; j<=ob.graph[i][0]; j++){
+            int indice = ob.graph[i][j];
+            point voisin = ob.points[indice];
+            if ((voisin.x > 0 && voisin.y/voisin.x < p1->tanHalf_Fov)  || (p.x > 0 && p.y/p.x < p1->tanHalf_Fov)){
+                SDL_RenderDrawLine(p1->renderer, coords[i].x, coords[i].y,coords[indice].x, coords[indice].y);
+            }
+        }
+    }
+    free(coords);
+}
+
+
+///Utilities
+
+//returns a 2d_square, bottom left centered
 
 object make_square(double x,double y,double z,double side_len){
     point* liste_points = malloc(sizeof(point)*4);
@@ -129,6 +201,7 @@ object make_square(double x,double y,double z,double side_len){
     return c;
 }
 
+//Cube , bottom front left centered
 object make_cube(double x,double y, double z,double side_len){
     point* liste_points = malloc(sizeof(point)*8);
     int** graph = malloc(sizeof(point*)*8);
@@ -165,56 +238,11 @@ object make_cube(double x,double y, double z,double side_len){
     return c;
 }
 
-
-
-point_2d projetction(point p,int width,int height,double FOV){
-    double x;
-    if (p.x < 0){
-        x = -p.x;
-    } else  x = p.x;
-    double y = p.y;
-    double z = p.z;
-
-    double alpha = 1 / (2 * tan(FOV/2));
-    double x_prime = y*alpha/x;
-    double y_prime = z*alpha/x;
-
-    double x_seconde = width*x_prime;
-    double y_seconde = height*y_prime;
-
-    point_2d n_p;
-    n_p.x = x_seconde + width/2;
-    n_p.y = height - (y_seconde + height/2);
-    return n_p;
-
-}
-
-void show_obj(object ob,SDL_Window* window,SDL_Renderer* renderer,double FOV){
-    point_2d* coords = malloc(sizeof(point_2d)*ob.nb_points);
-    int width;
-    int height;
-    SDL_GetWindowSize(window,&width,&height);
-    for (int i = 0; i<ob.nb_points; i++) coords[i] = projetction(ob.points[i],width,height,FOV);
-
-
-    for (int i = 0; i<ob.nb_points; i++) {
-        point p = ob.points[i];
-        for (int j = 1; j<=ob.graph[i][0]; j++){
-            int indice = ob.graph[i][j];
-            point voisin = ob.points[indice];
-            double tan_fov = tan(FOV/2);
-            if ((voisin.x > 0 && voisin.y/voisin.x < tan_fov)  || (p.x > 0 && p.y/p.x < tan_fov)){
-                SDL_RenderDrawLine(renderer, coords[i].x, coords[i].y,coords[indice].x, coords[indice].y);
-            }
-        }
-    }
-    free(coords);
-}
-
-void print_coords(object ob,int width,int height,double FOV){
+//Prints coordinates of an object
+void print_coords(object ob,int width,int height,player* p1){
      for (int i = 0; i<ob.nb_points; i++) {
         point p = ob.points[i];
-        point_2d p2d= projetction(p,width,height,FOV);
+        point_2d p2d= projection(p,width,height,p1);
         printf("point n%d : (%f,%f,%f) -> (%d,%d)\n",i,p.x,p.y,p.z,(int)p2d.x,(int)p2d.y);
     }
 }

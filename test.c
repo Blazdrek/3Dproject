@@ -2,13 +2,16 @@
 
 
 int main(){
-
-    for (double i = 0;i<=1;i++){
-        for (double j = 0;j<=1;j++){
-            int x = ((int)i+(int)j+1)%2;
-            int y = (((int)i+(int)j)%2)*3 + (((int)i+(int)j+1)%2)*2;
-            printf("(%d,%d)  |  ",x,y);
-        }
+    unsigned long int i = 1;
+    unsigned long last = 0;
+    int p = 1;
+    while (i>0 && last!=i){
+        p++;
+        last = i;
+        printf("(%lu = 2^%d - 1)\n" ,i,p);
+        i = (i+1)*2 - 1;
+        
+        
     }
 
     return 0;

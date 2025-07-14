@@ -9,22 +9,15 @@ int main(){
     SDL_Init(SDL_INIT_VIDEO) < 0;
     int width = 1000;
     int height = 1000;
-    double FOV = 1.5;
+    
     
     SDL_Window* window = SDL_CreateWindow("SDL sous WSL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window,-1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-
+    player* p1 = create_player(1.8,renderer);
     
     object cube = (make_cube(100,0,-6,12));
-    for (int i = 0;i < cube.nb_points;i++){
-        printf("%d | %d\n",i,cube.nb_points);
-        fflush(stdout);
-        point_2d pos = projetction(cube.points[i],width,height,1.5);
-        printf("%f %f \n ",pos.x,pos.y);
-        fflush(stdout);
-    }
     bool running = true;
     SDL_Event event;
     while (running){
@@ -74,14 +67,14 @@ int main(){
                     rotate_y(cube,0.02);
                 }
                 if (key == SDLK_p){
-                    print_coords(cube,width,height,FOV);
+                    print_coords(cube,width,height,p1);
                 }
             }
         }
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        show_obj(cube,window,renderer,FOV);
+        SDL_SetRenderDrawColor(p1->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(p1->renderer);
+        SDL_SetRenderDrawColor(p1->renderer, 255, 255, 255, 255);
+        show_obj(cube,window,p1);
         
         SDL_RenderPresent(renderer);
 
