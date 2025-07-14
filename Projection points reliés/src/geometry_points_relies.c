@@ -137,8 +137,13 @@ point_2d projection(point p,int width,int height,player* pl){
     double z = p.z;
 
     double alpha = 1 / (2 * pl->tanHalf_Fov);
-    double x_prime = y*alpha/x;
-    double y_prime = z*alpha/x;
+    
+    double x_prime = y;
+    double y_prime = z;
+    if (x > 0){
+        x_prime = y*alpha/x;
+        y_prime = z*alpha/x;
+    }
 
     double x_seconde = width*x_prime;
     double y_seconde = height*y_prime;
@@ -164,7 +169,9 @@ void show_obj(object ob,SDL_Window* window,player* p1){
         for (int j = 1; j<=ob.graph[i][0]; j++){
             int indice = ob.graph[i][j];
             point voisin = ob.points[indice];
-            if ((voisin.x > 0 && voisin.y/voisin.x < p1->tanHalf_Fov)  || (p.x > 0 && p.y/p.x < p1->tanHalf_Fov)){
+
+///Condition pour afficher
+            if ( (voisin.x > 0 && voisin.y/voisin.x < p1->tanHalf_Fov)     ||         (p.x > 0 && p.y/p.x < p1->tanHalf_Fov) ){
                 SDL_RenderDrawLine(p1->renderer, coords[i].x, coords[i].y,coords[indice].x, coords[indice].y);
             }
         }

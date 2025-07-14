@@ -17,55 +17,62 @@ int main(){
 
     player* p1 = create_player(1.8,renderer);
     
+    
     object cube = (make_cube(100,0,-6,12));
     bool running = true;
+    bool moves_log = false;
     SDL_Event event;
     while (running){
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_KEYDOWN) {
                 SDL_Keycode key = event.key.keysym.sym;
                 if (key == SDLK_ESCAPE) running = false;
+                if (key == SDLK_l) moves_log = ! moves_log;
+
+///Movements
                 if (key == SDLK_z) {
-                    printf("FOREWARD \n");
+                    if (moves_log) printf("FOREWARD \n");
                     fflush(stdout);
                     move(cube,-2,0,0);
                 }
                 if (key == SDLK_s) {
-                    printf("BACKWARD \n");
+                    if (moves_log) printf("BACKWARD \n");
                     fflush(stdout);
                     move(cube,2,0,0);
                     
                 }
                 if (key == SDLK_d) {
-                    printf("RIGHT \n");
+                    if (moves_log) printf("RIGHT \n");
                     fflush(stdout);
                     move(cube,0,-2,0);
                 }
                 if (key == SDLK_q) {
-                    printf("LEFT \n");
+                    if (moves_log) printf("LEFT \n");
                     fflush(stdout);
                     move(cube,0,2,0);
                 }
                 if (key == SDLK_a) {
-                    printf("ROTATE LEFT \n");
+                    if (moves_log) printf("ROTATE LEFT \n");
                     fflush(stdout);
                     rotate_z(cube,0.02);
                 }
                 if (key == SDLK_e) {
-                    printf("ROTATE RIGHT \n");
+                    if (moves_log) printf("ROTATE RIGHT \n");
                     fflush(stdout);
                     rotate_z(cube,-0.02);
                 }
                 if (key == SDLK_r) {
-                    printf("ROTATE UP \n");
+                    if (moves_log) printf("ROTATE UP \n");
                     fflush(stdout);
                     rotate_y(cube,-0.02);
                 }
                 if (key == SDLK_f) {
-                    printf("ROTATE DOWN \n");
+                    if (moves_log) printf("ROTATE DOWN \n");
                     fflush(stdout);
                     rotate_y(cube,0.02);
                 }
+
+///Prints cube coords
                 if (key == SDLK_p){
                     print_coords(cube,width,height,p1);
                 }
