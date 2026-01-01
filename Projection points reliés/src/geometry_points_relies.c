@@ -101,6 +101,11 @@ vector get_orthogonal(plane p){
 }
 
 
+
+
+
+
+
 ///Object Moves
 
 //Just adds x y z to currents object coords
