@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <math.h>
 #include <assert.h>
 #include "queue.h"
@@ -78,7 +79,7 @@ typedef struct polygon_list_s {
 
     /////////////Polygons Dyn Array////////
 
-polygon_list* create(){
+polygon_list* create_list(){
     polygon_list* p_l= malloc(sizeof(polygon_list));
     p_l->MAX_SIZE = 10;
     p_l->size = 0;
@@ -118,7 +119,7 @@ polygon pop(polygon_list* l){
 }
 
 polygon get(polygon_list* l,int i){ 
-    assert(0<i && i<l->size);
+    assert(i>=0 && i<l->size);
     return l->list[i] ;
 }
 
@@ -188,8 +189,12 @@ point intersect(plane p,line d){
     return pt;  
 }
 
-void split_polygon(plane p,polygon plg,polygon* front,polygon* back){
-    point prec = plg.vertices[0];
+
+
+void split_polygon(plane p,polygon* plg,polygon* front,polygon* back){
+
+    
+    point prec = plg->vertices[0];
     point* start = malloc(sizeof(point)); *start = prec;
     double c_prec = belong_to_plane(p,prec);
 
@@ -197,14 +202,16 @@ void split_polygon(plane p,polygon plg,polygon* front,polygon* back){
     queue* q_back = create_queue();
 
     if (c_prec == 0) {
+        point* start2 = malloc(sizeof(point)); *start2 = *start;
+
         enqueue(q_front,start);
-        enqueue(q_back,start);
+        enqueue(q_back,start2);
     } 
     else if (c_prec > 0) enqueue(q_front,start);
     else enqueue(q_back,start);
 
-    for (int i = 1;i < plg.len;i++){
-        point curr = plg.vertices[i];
+    for (int i = 1;i < plg->len;i++){
+        point curr = plg->vertices[i];
         double c = belong_to_plane(p,curr);
 
         point* curr_add = malloc(sizeof(point)); *curr_add = curr;
@@ -225,8 +232,9 @@ void split_polygon(plane p,polygon plg,polygon* front,polygon* back){
                 enqueue(q_back,curr_add);
             }
         } else if (c == 0 ){// Cas ou A->B traverse le plan car B appartient au plan
+            point* curr_add2 = malloc(sizeof(point)); *curr_add2 = *curr_add;
             enqueue(q_front,curr_add);// on doit ajouter le point aux deux polygones
-            enqueue(q_back,curr_add);
+            enqueue(q_back,curr_add2);
         } else if (c > 0 ) { // Cas ou A->B ne traverse pas le plan, B ( + )
             enqueue(q_front,curr_add);
         } else if (c < 0) { // Cas ou A->B ne traverse pas le plan , B(-)
@@ -235,16 +243,37 @@ void split_polygon(plane p,polygon plg,polygon* front,polygon* back){
         prec = curr;
         c_prec = c;
     }
+
+    point curr = *start;
+    double c = belong_to_plane(p,curr);
+    c_prec = belong_to_plane(p,prec);
+
+    //On compare finalement le dernier point avec le premier pour clore le polygon , au cas ou la derniere droite coupe le plan
+    if (c * c_prec < 0){ 
+        line d = get_line_passing(prec, curr);
+        point inter = intersect(p,d); 
+        point *inter_add = malloc(sizeof(point)); *inter_add = inter;
+        point *inter_add2 = malloc(sizeof(point)); *inter_add2 = inter;
+        enqueue(q_back,inter_add); 
+        enqueue(q_front,inter_add2);
+    }
+
     front->len = len(q_front);
-    back->len = len(q_back);
+    if (front->len > 0) front->vertices = malloc(sizeof(point)*front->len);
     for (int i = 0;i < front->len;i++){
         point* curr = dequeue(q_front);
+        printf("front pol : %f %f %f\n",curr->x,curr->y,curr->z);
         front->vertices[i] = *curr;
         free(curr);
     }
     free_queue(q_front);
+
+    back->len = len(q_back);
+    if (back->len > 0) back->vertices = malloc(sizeof(point)*back->len);
+    
     for (int i = 0;i < back->len;i++){
         point* curr = dequeue(q_back);
+        printf("back pol : %f %f %f\n",curr->x,curr->y,curr->z);
         back->vertices[i] = *curr;
         free(curr);
     }

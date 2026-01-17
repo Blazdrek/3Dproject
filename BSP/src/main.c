@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include "geometry.h"
+#include "bsptree_display.h"
 
 int main(){
 
@@ -18,92 +19,75 @@ int main(){
     SDL_Renderer* renderer = SDL_CreateRenderer(window,-1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 0, 255 , 255, 255);
 
-    point_2d A = {350.0,150.0};
-    point_2d B = {15.0,400.0};
-    point_2d C = {60.0,15.0};
+    
 
- 
+    plane p_horizontal = (plane) {0,0,1,0};
+    plane p_vertical = (plane) {1,0,0,0};
 
-    fill_triangle(A,B,C,renderer);
-    SDL_RenderPresent(renderer);
-    /* player* p1 = create_player(1.8,renderer);
+    polygon square1;
+    square1.len = 4;
+    square1.p = p_horizontal;
+    square1.vertices = malloc(sizeof(point)*4);
+    square1.vertices[0] = (point) {-5,0,0};
+    square1.vertices[1] = (point) {-5,10,0};
+    square1.vertices[2] = (point) {5,10,0};
+    square1.vertices[3] = (point) {5,0,0};
+
+
+    polygon rect1;
+    rect1.len = 4;
+    rect1.p = p_vertical;
+    rect1.vertices = malloc(sizeof(point)*4);
+    rect1.vertices[0] = (point) {0,0,-5};
+    rect1.vertices[1] = (point) {0,5,-5};
+    rect1.vertices[2] = (point) {0,5,5};
+    rect1.vertices[3] = (point) {0,0,5};
+
+    bsp_tree* bspt = create_tree();
+
+    polygon_list* plist = create_list();
+    append(plist,square1);
+    append(plist,rect1);
+    build_BSP_tree_v1(bspt,plist);
+
+
+    // polygon* front = malloc(sizeof(polygon));
+    // polygon* back = malloc(sizeof(polygon));
+
+    // polygon* s = malloc(sizeof(polygon));
+    // *s = square1;
+
     
     
-    object cube = (make_cube(100,0,-6,12));
+    // split_polygon(p_vertical,s,front,back);
+
+
+    
+
+    //point_2d A = {350.0,150.0};
+    //point_2d B = {15.0,400.0};
+    //point_2d C = {60.0,15.0};
+    //fill_triangle(A,B,C,renderer);
+    
+
+   
+
+
     bool running = true;
-    bool moves_log = false;
     SDL_Event event;
+
+    SDL_RenderPresent(renderer);
+
     while (running){
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_KEYDOWN) {
                 SDL_Keycode key = event.key.keysym.sym;
-                if (key == SDLK_ESCAPE) running = false;
-                if (key == SDLK_l) moves_log = ! moves_log;
-
-///Movements
-                if (key == SDLK_z) {
-                    if (moves_log) printf("FOREWARD \n");
-                    fflush(stdout);
-                    move(cube,-2,0,0);
-                }
-                if (key == SDLK_s) {
-                    if (moves_log) printf("BACKWARD \n");
-                    fflush(stdout);
-                    move(cube,2,0,0);
-                    
-                }
-                if (key == SDLK_d) {
-                    if (moves_log) printf("RIGHT \n");
-                    fflush(stdout);
-                    move(cube,0,-2,0);
-                }
-                if (key == SDLK_q) {
-                    if (moves_log) printf("LEFT \n");
-                    fflush(stdout);
-                    move(cube,0,2,0);
-                }
-                if (key == SDLK_a) {
-                    if (moves_log) printf("ROTATE LEFT \n");
-                    fflush(stdout);
-                    rotate_z(cube,0.02);
-                }
-                if (key == SDLK_e) {
-                    if (moves_log) printf("ROTATE RIGHT \n");
-                    fflush(stdout);
-                    rotate_z(cube,-0.02);
-                }
-                if (key == SDLK_r) {
-                    if (moves_log) printf("ROTATE UP \n");
-                    fflush(stdout);
-                    rotate_y(cube,-0.02);
-                }
-                if (key == SDLK_f) {
-                    if (moves_log) printf("ROTATE DOWN \n");
-                    fflush(stdout);
-                    rotate_y(cube,0.02);
-                }
-
-///Prints cube coords
-                if (key == SDLK_p){
-                    print_coords(cube,width,height,p1);
-                }
+                if (key == SDLK_ESCAPE) running = false;   
             }
-        }
-        
-        SDL_SetRenderDrawColor(p1->renderer, 0, 0, 0, 255);
-        SDL_RenderClear(p1->renderer);
-        SDL_SetRenderDrawColor(p1->renderer, 255, 255, 255, 255);
-        show_obj(cube,window,p1);
-        
-        SDL_RenderPresent(renderer);
-
-
-        
+        }   
     }
-    */
 
     
-    sleep(5);
     SDL_DestroyWindow(window);
     SDL_Quit();
 

@@ -27,17 +27,27 @@ void build_BSP_tree_v1(bsp_tree* t,polygon_list* list){
         t->front = NULL;
         t->coincidents = list;
     } else {
-        t->coincidents = create();
+        t->coincidents = create_list();
         polygon root = pop(list);
         t->p = root.p;
         append(t->coincidents,root);
 
-        polygon_list* front = create();
-        polygon_list* back  = create();
+        polygon_list* front = create_list();
+        polygon_list* back  = create_list();
+
+        polygon* front_pol = malloc(sizeof(polygon));
+        polygon* back_pol = malloc(sizeof(polygon));
+
         for (int i = 0 ; i < list->size;i++){
+            
             polygon pol = get(list,i);
-            if (scalar(get_orthogonal(t->p),get_orthogonal(pol.p)) == 0 && belong_to_plane(t->p,pol.vertices[0])==0) append(t->coincidents,pol);
-            else split_polygon(t->p,pol,front,back);
+            if (belong_to_plane(t->p,pol.vertices[0]) == 0 &&  belong_to_plane(t->p,pol.vertices[1]) == 0 && belong_to_plane(t->p,pol.vertices[2]) == 0) append(t->coincidents,pol);
+            else{
+                printf("c ici que ca plante : %f %f %f , ",pol.vertices[0].x,pol.vertices[0].y,pol.vertices[0].z); fflush(stdout);
+                split_polygon(t->p,&pol,front_pol,back_pol);
+                append(back,*back_pol);
+                append(front,*front_pol);
+            }
         }
         if (back->size >= 1){ 
             t->back = create_tree();

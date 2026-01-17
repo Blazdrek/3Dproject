@@ -48,17 +48,16 @@ typedef struct color_s{
 } color;
 
 typedef struct plane_s { //ax + by + cz + d = 0
-    int a;
-    int b;
-    int c;
-    int d;
-} plane;
+    double a;
+    double b;
+    double c;
+    double d;
+} plane ;
 
 typedef struct polygon_s {
     plane p;
     point* vertices;
     int len;
-    
 } polygon;
 
 typedef struct polygon_list_s {
@@ -67,7 +66,7 @@ typedef struct polygon_list_s {
     int MAX_SIZE;
 } polygon_list;
 
-polygon_list* create();
+polygon_list* create_list();
 polygon_list* create_from(polygon* list,int len);
 void append(polygon_list* l,polygon p);
 polygon pop(polygon_list* l);
@@ -81,7 +80,7 @@ double belong_to_line_2d(line l,point p);
 vector get_orthogonal(plane s);
 line get_line_passing(point a,point b);
 point intersect(plane p,line d);
-//void split_polygon(plane p,polygon plg,polygon_list* front_p,polygon_list* back_p);
+void split_polygon(plane p,polygon* plg,polygon* front_p,polygon* back_p);
 
 player* create_player(double FOV,SDL_Renderer* renderer);
 void move_player(player* p1,double x,double y, double z);
