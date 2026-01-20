@@ -78,6 +78,7 @@ int main(){
                 }
             }
         }
+        
         SDL_SetRenderDrawColor(p1->renderer, 0, 0, 0, 255);
         SDL_RenderClear(p1->renderer);
         SDL_SetRenderDrawColor(p1->renderer, 255, 255, 255, 255);
