@@ -60,4 +60,24 @@ void build_BSP_tree_v1(bsp_tree* t,polygon_list* list){
     }
 }
 
-//void show_BSP_tree(bsp_tree* t,)
+void show_BSP_tree(bsp_tree* t,int width,int height,player* pl){
+    if (t==NULL) return;
+    if (t->back == NULL && t->front == NULL){
+        show_polygon(pl,width,height,get(t->coincidents,0));
+    }
+    else {
+        double classify_p = belong_to_plane(t->p,pl->coord);
+        if (classify_p > 0){
+            show_BSP_tree(t->back,width,height,pl);
+            for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,width,height,get(t->coincidents,i));
+            show_BSP_tree(t->front,width,height,pl);
+        } else if (classify_p < 0){
+            show_BSP_tree(t->front,width,height,pl);
+            for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,width,height,get(t->coincidents,i));
+            show_BSP_tree(t->back,width,height,pl);
+        } else {
+            show_BSP_tree(t->front,width,height,pl);
+            show_BSP_tree(t->back,width,height,pl);
+        }
+    }
+}

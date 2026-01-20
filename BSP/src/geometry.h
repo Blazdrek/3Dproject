@@ -12,7 +12,8 @@ typedef point vector;
 
 
 typedef struct player_s {
-    point* coord;
+    point coord;
+    double angle_x;
     double angle_y;
     double angle_z;
     double FOV;
@@ -56,6 +57,7 @@ typedef struct plane_s { //ax + by + cz + d = 0
 
 typedef struct polygon_s {
     plane p;
+    color col;
     point* vertices;
     int len;
 } polygon;
@@ -81,13 +83,15 @@ vector get_orthogonal(plane s);
 line get_line_passing(point a,point b);
 point intersect(plane p,line d);
 void split_polygon(plane p,polygon* plg,polygon* front_p,polygon* back_p);
+void show_polygon(player* pl , int width,int height,polygon pol);
 
 player* create_player(double FOV,SDL_Renderer* renderer);
 void move_player(player* p1,double x,double y, double z);
 void rotate_z(object ob,double angle);
 void rotate_y(object ob,double angle);
-void fill_triangle(point_2d A,point_2d B,point_2d C,SDL_Renderer* renderer);
-point_2d projection(point p,int width,int height,player* pl);
+void fill_triangle(point_2d A,point_2d B,point_2d C, int width,int height,SDL_Renderer* renderer);
+point relative_pos(point p,player* pl);
+point_2d projection(point p, int width,int height,player* pl);
 
 
 

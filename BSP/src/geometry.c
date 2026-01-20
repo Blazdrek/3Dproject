@@ -23,7 +23,8 @@ typedef struct point_2d_s {
 } point_2d;
 
 typedef struct player_s {
-    point* coord;
+    point coord;
+    double angle_x;
     double angle_y;
     double angle_z;
     double FOV;
@@ -62,6 +63,7 @@ typedef struct plane_s { //ax + by + cz + d = 0
 
 typedef struct polygon_s {
     plane p;
+    color col;
     point* vertices;
     int len;
     
@@ -291,16 +293,20 @@ void split_polygon(plane p,polygon* plg,polygon* front,polygon* back){
 
 player* create_player(double FOV,SDL_Renderer* renderer){
     player* p = malloc(sizeof(player));
+    p->angle_x = 0;
+    p->angle_y = 0;
+    p->angle_z = 0;
     p->FOV = FOV;
     p->tanHalf_Fov = tan(FOV/2);
     p->renderer = renderer;
+    p->coord = (point) {0,0,0};
     return p;
 }
 
 void move_player(player* p1,double x, double y, double z){
-    p1->coord->x = p1->coord->x + x;
-    p1->coord->y = p1->coord->y + y;
-    p1->coord->z = p1->coord->z + z;
+    p1->coord.x = p1->coord.x + x;
+    p1->coord.y = p1->coord.y + y;
+    p1->coord.z = p1->coord.z + z;
 
 }
 
@@ -320,12 +326,46 @@ void rotate_y(object ob,double angle){
     }
 }
 
+point relative_pos(point p,player* pl){
+    point new_pos;
+    new_pos.x = (p.x - pl->coord.x);
+    new_pos.y = (p.y - pl->coord.y);
+    new_pos.z = (p.z - pl->coord.z);
+
+    double tmpx = new_pos.x;
+    double tmpy = new_pos.y;
+    double tmpz = new_pos.z;
+
+        //Rotation autour de Z
+    new_pos.x = tmpx * cos(pl->angle_z) - tmpy * sin(pl->angle_z);
+    new_pos.y = tmpx * sin(pl->angle_z) + tmpy * cos(pl->angle_z);
+
+    tmpx = new_pos.x;
+    tmpy = new_pos.y;
+    tmpz = new_pos.z;
+
+        //Rotation autour de Y
+    new_pos.z = tmpz * cos(pl->angle_y) - tmpx * sin(pl->angle_y);
+    new_pos.x = tmpz * sin(pl->angle_y) + tmpx * cos(pl->angle_y);
+
+    tmpx = new_pos.x;
+    tmpy = new_pos.y;
+    tmpz = new_pos.z;
+
+        //Rotation autour de X
+    new_pos.y = tmpy * cos(pl->angle_x) - tmpz * sin(pl->angle_x);
+    new_pos.z = tmpy * sin(pl->angle_x) + tmpz * cos(pl->angle_x);    
+    
+    return new_pos;
+}
 
 
-point_2d projection(point p,int width,int height,player* pl){
-    double x = p.x - pl->coord->x;
-    double y = p.y - pl->coord->y;
-    double z = p.z - pl->coord->z;
+point_2d projection(point p, int width,int height,player* pl){
+
+    point np = relative_pos(p,pl);
+    double x = np.x;
+    double y = np.y;
+    double z = np.z;
 
     double alpha = 1 / (2 * pl->tanHalf_Fov);
     
@@ -346,7 +386,11 @@ point_2d projection(point p,int width,int height,player* pl){
 
 }
 
-void fill_triangle(point_2d A,point_2d B,point_2d C,SDL_Renderer* renderer){
+void fill_triangle(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* renderer){
+
+    double width = (double) w;
+    double height = (double) h;
+
     point_2d ps[] = {A,B,C};
     point_2d min = A;
     point_2d max = A;
@@ -357,7 +401,13 @@ void fill_triangle(point_2d A,point_2d B,point_2d C,SDL_Renderer* renderer){
         if (curr.x > max.x) max.x = curr.x;
         if (curr.y > max.y) max.y = curr.y;
     }
-    
+   if (min.x < 0) min.x = 0;
+   if (min.y < 0) min.y = 0;
+   if (max.x >= width) max.x = width;
+   if (max.y >= height) max.y = height;
+
+
+
     for (double x = min.x ; x< max.x ; x++){
         for (double y = min.y ; y < max.y ; y++){
             bool showing = true;
@@ -382,11 +432,18 @@ void fill_triangle(point_2d A,point_2d B,point_2d C,SDL_Renderer* renderer){
     }
 }
 
-void show_polygon(player* pl , polygon pol){
-    assert(pol.len > 2);
-    point init = pol.vertices[0];
-    point last = pol.vertices[1];
-    for (int i = 2;i<pol.len;i++){
-        point curr = pol.vertices[i];
+
+void show_polygon(player* pl , int width,int height, polygon pol){
+
+    point_2d* p_list = malloc(sizeof(point_2d) * pol.len);
+    for (int i = 0; i< pol.len; i++){
+        printf("%d \n",i);
+        p_list[i] = projection(pol.vertices[i],width,height,pl);
+        printf("passé1\n");
+        if (i >= 2) {
+            SDL_SetRenderDrawColor(pl->renderer,pol.col.r,pol.col.g,pol.col.b,1);
+            fill_triangle(p_list[0],p_list[i-1],p_list[i],width,height,pl->renderer);
+        }
     }
+    free(p_list);
 }
