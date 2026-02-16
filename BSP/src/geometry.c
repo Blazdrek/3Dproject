@@ -43,7 +43,7 @@ typedef struct display_s {
     int width;
 } display ;
 
-typedef struct color_s{
+typedef struct color_s{// R, G, B
     int r;
     int g;
     int b;
@@ -88,7 +88,7 @@ polygon_list* create_list(){
     p_l->list = malloc(sizeof(polygon)*p_l->MAX_SIZE);
 }
 
-polygon_list* create_from(polygon* list,int len){
+polygon_list* create_from(polygon* list,int len){//polygon* in arg , polygon_list created
     polygon_list* p_l= malloc(sizeof(polygon_list));
     p_l->MAX_SIZE = len*2;
     assert(p_l->MAX_SIZE > len);
@@ -97,7 +97,7 @@ polygon_list* create_from(polygon* list,int len){
     return p_l;
 }
 
-void append(polygon_list* l,polygon p){
+void append(polygon_list* l,polygon p){//Dynamic array
     l->list[l->size] = p;
     l->size++;
     if (l->size == l->MAX_SIZE){
@@ -150,6 +150,14 @@ double scalar(vector a,vector b){
     return (a.x * b.x ) + (a.y * b.y) + (a.z * b.z);
 }
 
+vector vectorial_product(vector a,vector b){
+    vector c;
+    c.x = a.y * b.z - a.z * b.y;
+    c.y = a.z * b.x - a.x * b.z;
+    c.z = a.x * b.y - a.y * b.x;
+    return c;
+}
+
         ///Planes :
 
 // ax + by + cz + d
@@ -164,6 +172,13 @@ vector get_orthogonal(plane s){
     v.y = s.b;
     v.z = s.c;
     return v;
+}
+plane get_plane_passing_by(point a,point b,point c){
+    vector ab = (vector) {a.x - b.x,a.y - b.y,a.z - b.z};
+    vector ac = (vector) {a.x - c.x,a.y - c.y,a.z - c.z};
+    vector vect = vectorial_product(ab,ac);
+    double d = - (vect.x * a.x + vect.y * a.y + vect.z * a.z);
+    plane p = (plane) {vect.a,vect.b,vect.c,d};
 }
 
 // (AB)
@@ -360,6 +375,7 @@ point relative_pos(point p,player* pl){
 }
 
 
+
 point_2d projection(point p, int width,int height,player* pl){
 
     point np = relative_pos(p,pl);
@@ -387,26 +403,34 @@ point_2d projection(point p, int width,int height,player* pl){
 }
 
 void fill_triangle(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* renderer){
-
     double width = (double) w;
     double height = (double) h;
 
     point_2d ps[] = {A,B,C};
+    double coefs[6];
+    double eq_car_temoins[3];
     point_2d min = A;
     point_2d max = A;
     for (int i = 0;i < 3;i++){
         point_2d curr = ps[i];
+        point_2d edge2 = ps[(i+1)%3];
+        point_2d third = ps[(i+2)%3];
         if (curr.x < min.x) min.x = curr.x;
         if (curr.y < min.y) min.y = curr.y;
         if (curr.x > max.x) max.x = curr.x;
         if (curr.y > max.y) max.y = curr.y;
+        if (curr.x != edge2.x) coefs[2*i] = (edge2.y - curr.y) / (edge2.x - curr.x);
+        else coefs[2*i] = 0.0;
+        coefs[2*i + 1] = curr.y - curr.x * coefs[2*i];
+        eq_car_temoins[i] = coefs[2*i] * third.x - third.y + coefs[2*i + 1];;
+
     }
    if (min.x < 0) min.x = 0;
    if (min.y < 0) min.y = 0;
    if (max.x >= width) max.x = width;
    if (max.y >= height) max.y = height;
 
-
+    double facteur_correctif = 50;
 
     for (double x = min.x ; x< max.x ; x++){
         for (double y = min.y ; y < max.y ; y++){
@@ -415,13 +439,8 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* r
                 point_2d edge1 = ps[i];
                 point_2d edge2 = ps[(i+1)%3];
                 point_2d third = ps[(i+2)%3];
-                double a;
-                if (edge1.x != edge2.x) a = (edge2.y - edge1.y) / (edge2.x - edge1.x);
-                else a = 0.0;
-                double b = edge1.y - edge1.x * a;
-                double eq_car_point = a * x - y + b;
-                double eq_car_temoin = a * third.x - third.y + b;
-                showing = showing && (eq_car_point * eq_car_temoin >= 0);
+                double eq_car_point = coefs[2*i] * x - y + coefs[2*i + 1];;
+                showing = showing && (eq_car_point * eq_car_temoins[i] >= -facteur_correctif);
             }
             if (showing) {
                 //printf("(%f %f) ",x,y);

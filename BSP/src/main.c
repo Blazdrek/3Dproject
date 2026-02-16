@@ -100,11 +100,13 @@ int main(){
 
             case SDLK_d:
                 has_moved = true;
-                pl->coord.y += pspeed;
+                pl->coord.x += pspeed * sin(pl->angle_z);
+                pl->coord.y += pspeed * cos(pl->angle_z);
                 break;
             case SDLK_q:
                 has_moved = true;
-                pl->coord.y -= pspeed;
+                pl->coord.x -= pspeed * sin(pl->angle_z);
+                pl->coord.y -= pspeed * cos(pl->angle_z);
                 break;
 
             case SDLK_a:
