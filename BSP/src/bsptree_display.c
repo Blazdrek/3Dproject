@@ -41,12 +41,12 @@ void build_BSP_tree_v1(bsp_tree* t,polygon_list* list){
         for (int i = 0 ; i < list->size;i++){
             
             polygon pol = get(list,i);
+            printf("%d\n",list->size);
             if (belong_to_plane(t->p,pol.vertices[0]) == 0 &&  belong_to_plane(t->p,pol.vertices[1]) == 0 && belong_to_plane(t->p,pol.vertices[2]) == 0) append(t->coincidents,pol);
             else{
-                printf("c ici que ca plante : %f %f %f , ",pol.vertices[0].x,pol.vertices[0].y,pol.vertices[0].z); fflush(stdout);
                 split_polygon(t->p,&pol,front_pol,back_pol);
-                append(back,*back_pol);
-                append(front,*front_pol);
+                if (back_pol->len >0) (back,*back_pol);
+                if (front_pol->len >0)append(front,*front_pol);
             }
         }
         if (back->size >= 1){ 

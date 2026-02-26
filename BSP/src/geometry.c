@@ -125,6 +125,15 @@ polygon get(polygon_list* l,int i){
     return l->list[i] ;
 }
 
+void print_pol_list(polygon_list* plist){
+    for (int i = 0;i<plist->size;i++){
+        printf("%d\n",i);
+        for (int j = 0;j<get(plist,i).len;j++){
+            printf("%f,%f,%f\n",(get(plist,i).vertices[j].x),(get(plist,i).vertices[j].y),(get(plist,i).vertices[j].z));
+    
+        }
+    }
+}
 
 
     /////////////Maths/////////////////////
@@ -148,6 +157,10 @@ double dist(point a,point b){
 //  <a|b>
 double scalar(vector a,vector b){
     return (a.x * b.x ) + (a.y * b.y) + (a.z * b.z);
+}
+
+double norme(vector a){
+    return a.x*a.x + a.y*a.y + a.z*a.z;
 }
 
 vector vectorial_product(vector a,vector b){
@@ -177,8 +190,13 @@ plane get_plane_passing_by(point a,point b,point c){
     vector ab = (vector) {a.x - b.x,a.y - b.y,a.z - b.z};
     vector ac = (vector) {a.x - c.x,a.y - c.y,a.z - c.z};
     vector vect = vectorial_product(ab,ac);
+    double n = norme(vect);
+    vect.x /= n;
+    vect.y /= n;
+    vect.z /= n;
+
     double d = - (vect.x * a.x + vect.y * a.y + vect.z * a.z);
-    plane p = (plane) {vect.a,vect.b,vect.c,d};
+    plane p = (plane) {vect.x,vect.y,vect.z,d};
 }
 
 // (AB)
@@ -276,21 +294,22 @@ void split_polygon(plane p,polygon* plg,polygon* front,polygon* back){
     }
 
     front->len = len(q_front);
-    if (front->len > 0) front->vertices = malloc(sizeof(point)*front->len);
+    if (front->len > 2) front->vertices = malloc(sizeof(point)*front->len);else {(front->vertices = NULL);front->len = 0;}
+
     for (int i = 0;i < front->len;i++){
         point* curr = dequeue(q_front);
-        printf("front pol : %f %f %f\n",curr->x,curr->y,curr->z);
+        //printf("front pol : %f %f %f\n",curr->x,curr->y,curr->z);
         front->vertices[i] = *curr;
         free(curr);
     }
     free_queue(q_front);
 
     back->len = len(q_back);
-    if (back->len > 0) back->vertices = malloc(sizeof(point)*back->len);
+    if (back->len > 2) back->vertices = malloc(sizeof(point)*back->len); else {back->vertices = NULL;back->len = 0;}
     
     for (int i = 0;i < back->len;i++){
         point* curr = dequeue(q_back);
-        printf("back pol : %f %f %f\n",curr->x,curr->y,curr->z);
+        //printf("back pol : %f %f %f\n",curr->x,curr->y,curr->z);
         back->vertices[i] = *curr;
         free(curr);
     }
@@ -456,9 +475,9 @@ void show_polygon(player* pl , int width,int height, polygon pol){
 
     point_2d* p_list = malloc(sizeof(point_2d) * pol.len);
     for (int i = 0; i< pol.len; i++){
-        printf("%d \n",i);
+        //printf("%d \n",i);
         p_list[i] = projection(pol.vertices[i],width,height,pl);
-        printf("passé1\n");
+        //printf("passé1\n");
         if (i >= 2) {
             SDL_SetRenderDrawColor(pl->renderer,pol.col.r,pol.col.g,pol.col.b,1);
             fill_triangle(p_list[0],p_list[i-1],p_list[i],width,height,pl->renderer);

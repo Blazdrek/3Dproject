@@ -73,13 +73,15 @@ polygon_list* create_from(polygon* list,int len);
 void append(polygon_list* l,polygon p);
 polygon pop(polygon_list* l);
 polygon get(polygon_list* l,int i);
+print_pol_list(polygon_list* plist);
 
 double d_abs(double x);
 double dist(point a,point b);
 double scalar(vector a,vector b);
+vector vectorial_product(vector a,vector b);
 double belong_to_plane(plane s,point p);
-double belong_to_line_2d(line l,point p);
 vector get_orthogonal(plane s);
+plane get_plane_passing_by(point a,point b,point c);
 line get_line_passing(point a,point b);
 point intersect(plane p,line d);
 void split_polygon(plane p,polygon* plg,polygon* front_p,polygon* back_p);

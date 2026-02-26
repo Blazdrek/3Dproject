@@ -7,14 +7,15 @@
 #include <assert.h>
 #include "geometry.h"
 #include "bsptree_display.h"
+#include "parse.h"
 
 int main(){
-
+    
     SDL_Init(SDL_INIT_VIDEO) < 0;
     int width = 1000;
     int height = 1000;
     
-
+    
     
     SDL_Window* window = SDL_CreateWindow("SDL sous WSL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window,-1, SDL_RENDERER_ACCELERATED);
@@ -58,10 +59,10 @@ int main(){
     
 
     bsp_tree* bspt = create_tree();
-
-    polygon_list* plist = create_list();
-    append(plist,square1);
-    append(plist,sq2);
+    polygon_list* plist = parse_file("polygons2.txt");
+    print_pol_list(plist);
+    // append(plist,square1);
+    // append(plist,sq2);
     build_BSP_tree_v1(bspt,plist);
 
     bool running = true;
@@ -72,7 +73,7 @@ int main(){
 
     SDL_RenderPresent(renderer);
 
-
+    
 
     while (running){
         while (SDL_PollEvent(&event)) {
@@ -87,10 +88,8 @@ int main(){
             
             case SDLK_z:
                 has_moved = true;
-                printf("%f %f %f\n",pl->coord.x,pl->coord.y,pl->angle_z);
                 pl->coord.x += pspeed * cos(pl->angle_z);
                 pl->coord.y -= pspeed * sin(pl->angle_z);
-                printf("%f %f %f\n",pl->coord.x,pl->coord.y,pl->angle_z);
                 break;
             case SDLK_s:
                 has_moved = true;
