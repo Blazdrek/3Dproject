@@ -73,7 +73,7 @@ polygon_list* create_from(polygon* list,int len);
 void append(polygon_list* l,polygon p);
 polygon pop(polygon_list* l);
 polygon get(polygon_list* l,int i);
-print_pol_list(polygon_list* plist);
+void print_pol_list(polygon_list* plist);
 
 double d_abs(double x);
 double dist(point a,point b);

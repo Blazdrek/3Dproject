@@ -86,6 +86,7 @@ polygon_list* create_list(){
     p_l->MAX_SIZE = 10;
     p_l->size = 0;
     p_l->list = malloc(sizeof(polygon)*p_l->MAX_SIZE);
+    return p_l;
 }
 
 polygon_list* create_from(polygon* list,int len){//polygon* in arg , polygon_list created
@@ -197,6 +198,7 @@ plane get_plane_passing_by(point a,point b,point c){
 
     double d = - (vect.x * a.x + vect.y * a.y + vect.z * a.z);
     plane p = (plane) {vect.x,vect.y,vect.z,d};
+    return p;
 }
 
 // (AB)
@@ -300,6 +302,7 @@ void split_polygon(plane p,polygon* plg,polygon* front,polygon* back){
         point* curr = dequeue(q_front);
         //printf("front pol : %f %f %f\n",curr->x,curr->y,curr->z);
         front->vertices[i] = *curr;
+        front->col = plg->col;
         free(curr);
     }
     free_queue(q_front);
@@ -311,6 +314,7 @@ void split_polygon(plane p,polygon* plg,polygon* front,polygon* back){
         point* curr = dequeue(q_back);
         //printf("back pol : %f %f %f\n",curr->x,curr->y,curr->z);
         back->vertices[i] = *curr;
+        back->col = plg->col;
         free(curr);
     }
     free_queue(q_back);
@@ -455,9 +459,6 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* r
         for (double y = min.y ; y < max.y ; y++){
             bool showing = true;
             for (int i = 0;i < 3;i++){
-                point_2d edge1 = ps[i];
-                point_2d edge2 = ps[(i+1)%3];
-                point_2d third = ps[(i+2)%3];
                 double eq_car_point = coefs[2*i] * x - y + coefs[2*i + 1];;
                 showing = showing && (eq_car_point * eq_car_temoins[i] >= -facteur_correctif);
             }

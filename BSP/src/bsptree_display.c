@@ -45,19 +45,27 @@ void build_BSP_tree_v1(bsp_tree* t,polygon_list* list){
             if (belong_to_plane(t->p,pol.vertices[0]) == 0 &&  belong_to_plane(t->p,pol.vertices[1]) == 0 && belong_to_plane(t->p,pol.vertices[2]) == 0) append(t->coincidents,pol);
             else{
                 split_polygon(t->p,&pol,front_pol,back_pol);
-                if (back_pol->len >0) (back,*back_pol);
+                if (back_pol->len >0) append(back,*back_pol);
                 if (front_pol->len >0)append(front,*front_pol);
             }
         }
         if (back->size >= 1){ 
+            printf("J'envoie a l'arriere\n");
             t->back = create_tree();
             build_BSP_tree_v1(t->back,back);
         }
         if (front->size >= 1){ 
+            printf("J'envoie a l'avant\n");
             t->front = create_tree();
             build_BSP_tree_v1(t->front,front);
         }
     }
+}
+
+void print_bsp_tree(bsp_tree* t){
+    print_pol_list(t->coincidents);
+    if (t->front != NULL) print_bsp_tree(t->front);
+    if (t->back != NULL) print_bsp_tree(t->back);
 }
 
 void show_BSP_tree(bsp_tree* t,int width,int height,player* pl){

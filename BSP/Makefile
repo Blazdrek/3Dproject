@@ -3,5 +3,10 @@ SRC = $(wildcard src/*.c)
 
 $(TARGET) : $(SRC)
 	clear
-	gcc $(SRC) $(shell sdl2-config --cflags --libs) -lm -o bin/$(TARGET) -fsanitize=address -g
+	gcc $(SRC) $(shell sdl2-config --cflags --libs) -lm -o bin/$(TARGET)
+	./bin/$(TARGET)
+
+debug :
+	clear
+	gcc $(SRC) $(shell sdl2-config --cflags --libs) -lm -o bin/$(TARGET) -W -Wall -fsanitize=address -g
 	./bin/$(TARGET)

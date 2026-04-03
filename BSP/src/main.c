@@ -11,7 +11,7 @@
 
 int main(){
     
-    SDL_Init(SDL_INIT_VIDEO) < 0;
+    SDL_Init(SDL_INIT_VIDEO);
     int width = 1000;
     int height = 1000;
     
@@ -60,10 +60,10 @@ int main(){
 
     bsp_tree* bspt = create_tree();
     polygon_list* plist = parse_file("polygons2.txt");
-    print_pol_list(plist);
     // append(plist,square1);
     // append(plist,sq2);
     build_BSP_tree_v1(bspt,plist);
+    print_bsp_tree(bspt);
 
     bool running = true;
     bool has_moved = true;
@@ -131,11 +131,12 @@ int main(){
             case SDLK_SPACE:
                 has_moved = true;
                 pl->coord.z += 0.2;
+                break;
 
-            // case SDLK_LCTRL:
-            //     has_moved = true;
-            //     printf("DOWN\n");
-            //     pl->coord.z -= 0.2;
+            case SDLK_c:
+                has_moved = true;
+                pl->coord.z -= 0.2;
+                break;
 
             default:
                 break;
