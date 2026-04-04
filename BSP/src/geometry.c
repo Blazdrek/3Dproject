@@ -6,6 +6,8 @@
 #include <assert.h>
 #include "queue.h"
 
+bool DEBUG_SHOW_POLYGON=true;
+
 ///////////////////////////////////////
 //Structures///////////////////////////
 ///////////////////////////////////////
@@ -501,7 +503,7 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
     point_2d points[3] = {A,B,C};
 
     // Sort point
-    for (int i = 1;i < 0;i++){
+    for (int i = 1;i >= 0;i--){
         for (int j = i;j<2;j++){
             if (points[j].x > points[j+1].x){
                 point_2d tmp = points[j];
@@ -515,6 +517,7 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
     if (points[0].x != points[1].x){
         double pente_01 = ( points[0].y - points[1].y ) / (points[0].x - points[1].x); //Pente de 0 a 1
         double pente_02 = ( points[0].y - points[2].y ) / (points[0].x - points[2].x); //Pente de 0 a 2
+
         double k_01 = points[0].y - pente_01*points[0].x; //y = pente_01x + k_01
         double k_02 = points[0].y - pente_02*points[0].x; //y = pente_02x + k_02
         
@@ -522,30 +525,30 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
         if (pente_02*points[1].x + k_02 < points[1].y){
 
             double min_x = max(points[0].x, 0.0);
-            double max_x = min(points[1].x, max_width); // Min entre x et le bord de la fenetre (= width si x > width)
-            for (double x = min_x; x<max_x ; x++){ // 0 <= X <= Width
+            double max_x = min(points[1].x, max_width-1); // Min entre x et le bord de la fenetre (= width si x > width)
+            for (double x = min_x; x<=max_x ; x++){ // 0 <= X <= Width
                 
                 
                 double min_y = max(pente_02*x + k_02,0.0);// Y est en dessous de 0-2 donc on veut qu'il soit entre 0-2 et le min entre le bas ( h ) et mr bas du triangle
-                double max_y = min(pente_01*x + k_01,max_height);
+                double max_y = min(pente_01*x + k_01,max_height-1);
                 for (double y = min_y; y <= max_y; y++ ){ // 0 <= Y <= max_height
                     
                     if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
-                    else printf("%f, %f", x, y);
+                    else printf("(%f, %f)", x, y);
                 }
             }
         } else { // Y est au dessus de 0-2 ( tete en haut )
 
             double min_x = max(points[0].x, 0.0);
-            double max_x = min(points[1].x,max_width);
-            for (double x = min_x;x<max_x ;x++){
+            double max_x = min(points[1].x,max_width-1);
+            for (double x = min_x;x<=max_x ;x++){
                 
-                double max_y = min(pente_02*x + k_02,max_height);/// y est au min sur 0-1 et au max sur 0-2 
+                double max_y = min(pente_02*x + k_02,max_height-1);/// y est au min sur 0-1 et au max sur 0-2 
                 double min_y = max(pente_01*x + k_01,0.0);
                 for (double y = min_y;y <= max_y;y++ ){// 0 <= Y <= max_height
 
                     if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
-                    else printf("%f, %f", x, y);
+                    else printf("[%f, %f]", x, y);
                 }
             }
         }
@@ -559,30 +562,30 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
 
         if (pente_02*points[1].x + k_02 < points[1].y){//toujours y tete en bas
             
-            double max_x = min(points[2].x,max_width);
+            double max_x = min(points[2].x,max_width-1);
             double min_x = max(points[1].x,0.0);
-            for (double x = min_x ;x<max_x ;x++){
+            for (double x = min_x ;x<=max_x ;x++){
                 
-                double max_y = min(max_height,pente_12*x + k_12);
+                double max_y = min(max_height-1,pente_12*x + k_12);
                 double min_y = max(0.0,pente_02*x + k_02);
                 for (double y = min_y;y <= max_y;y++ ){
                     
                     if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
-                    else printf("%f, %f", x, y);
+                    else printf("~%f, %f~", x, y);
                 }
             }
         } else {
 
-            double max_x = min(points[2].x,max_width);
+            double max_x = min(points[2].x,max_width-1);
             double min_x = max(points[1].x,0.0);
-            for (double x = max(points[1].x,0.0) ;x<max_x ;x++){
+            for (double x = min_x;x<=max_x ;x++){
                 
-                double max_y = min(max_height,pente_02*x + k_02);
+                double max_y = min(max_height-1,pente_02*x + k_02);
                 double min_y = max(0.0,pente_12*x + k_12);
                 for (double y =min_y;y <= max_y;y++ ){
                     
                     if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
-                    else printf("%f, %f", x, y);
+                    else printf("{%f, %f}", x, y);
                 }
             }
         }
@@ -599,6 +602,11 @@ void show_polygon(player* pl , int width,int height, polygon pol){
         p_list[i] = projection(pol.vertices[i],width,height,pl);
         //printf("passé1\n");
         if (i >= 2) {
+            if (DEBUG_SHOW_POLYGON) { //change color
+                    pol.col.r *=0.85;
+                    pol.col.g *=0.85;
+                    pol.col.b *=0.85;
+                }
             SDL_SetRenderDrawColor(pl->renderer,pol.col.r,pol.col.g,pol.col.b,1);
             fill_triangle(p_list[0],p_list[i-1],p_list[i],width,height,pl->renderer);
         }

@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdbool.h>
 
-bool DEBUG = true;
+bool DEBUG_SPLIT_TREE = true;
 
 typedef struct bsp_tree_s {
     struct bsp_tree_s* front;
@@ -48,7 +48,7 @@ void build_BSP_tree_v1(bsp_tree* t,polygon_list* list){
             else{
                 split_polygon(t->p,&pol,front_pol,back_pol);
 
-                if (DEBUG) {
+                if (DEBUG_SPLIT_TREE) { //change color
                     back_pol->col.r *=0.85;
                     back_pol->col.g *=0.85;
                     back_pol->col.b *=0.85;
@@ -91,7 +91,6 @@ void show_BSP_tree(bsp_tree* t,int width,int height,player* pl){
             for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,width,height,get(t->coincidents,i));
             show_BSP_tree(t->back,width,height,pl);
         } else {
-            printf("t'es completement plané mec la\n");
             show_BSP_tree(t->front,width,height,pl);
             show_BSP_tree(t->back,width,height,pl);
         }
