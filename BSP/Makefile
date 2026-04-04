@@ -8,5 +8,5 @@ $(TARGET) : $(SRC)
 
 debug :
 	clear
-	gcc $(SRC) $(shell sdl2-config --cflags --libs) -lm -o bin/$(TARGET) -W -Wall -fsanitize=address -g
+	gcc $(SRC) $(shell sdl2-config --cflags --libs) -lm -o bin/$(TARGET) -O3 -W -Wall -fsanitize=address -g
 	./bin/$(TARGET)

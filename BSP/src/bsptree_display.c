@@ -5,13 +5,13 @@
 #include <assert.h>
 #include <stdbool.h>
 
+bool DEBUG = true;
 
 typedef struct bsp_tree_s {
     struct bsp_tree_s* front;
     struct bsp_tree_s* back;
     plane p;
     polygon_list* coincidents;
-    int len;
 } bsp_tree;
 
 bsp_tree* create_tree(){
@@ -22,10 +22,12 @@ bsp_tree* create_tree(){
 }
 
 void build_BSP_tree_v1(bsp_tree* t,polygon_list* list){
+    printf("Hello ");
     if (list->size == 1) {
         t->back = NULL;
         t->front = NULL;
         t->coincidents = list;
+        t->p = get(list,0).p;
     } else {
         t->coincidents = create_list();
         polygon root = pop(list);
@@ -41,21 +43,26 @@ void build_BSP_tree_v1(bsp_tree* t,polygon_list* list){
         for (int i = 0 ; i < list->size;i++){
             
             polygon pol = get(list,i);
-            printf("%d\n",list->size);
+            
             if (belong_to_plane(t->p,pol.vertices[0]) == 0 &&  belong_to_plane(t->p,pol.vertices[1]) == 0 && belong_to_plane(t->p,pol.vertices[2]) == 0) append(t->coincidents,pol);
             else{
                 split_polygon(t->p,&pol,front_pol,back_pol);
+
+                if (DEBUG) {
+                    back_pol->col.r *=0.85;
+                    back_pol->col.g *=0.85;
+                    back_pol->col.b *=0.85;
+                }
+
                 if (back_pol->len >0) append(back,*back_pol);
                 if (front_pol->len >0)append(front,*front_pol);
             }
         }
         if (back->size >= 1){ 
-            printf("J'envoie a l'arriere\n");
             t->back = create_tree();
             build_BSP_tree_v1(t->back,back);
         }
         if (front->size >= 1){ 
-            printf("J'envoie a l'avant\n");
             t->front = create_tree();
             build_BSP_tree_v1(t->front,front);
         }
@@ -84,6 +91,7 @@ void show_BSP_tree(bsp_tree* t,int width,int height,player* pl){
             for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,width,height,get(t->coincidents,i));
             show_BSP_tree(t->back,width,height,pl);
         } else {
+            printf("t'es completement plané mec la\n");
             show_BSP_tree(t->front,width,height,pl);
             show_BSP_tree(t->back,width,height,pl);
         }

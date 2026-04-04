@@ -27,34 +27,34 @@ int main(){
     plane p_vertical = (plane) {1,0,0,0};
     plane p_vert2 = (plane) {1,0,0,-50};
 
-    polygon square1;
-    square1.len = 4;
-    square1.p = p_horizontal;
-    square1.vertices = malloc(sizeof(point)*4);
-    square1.vertices[0] = (point) {45,-5,0};
-    square1.vertices[1] = (point) {55,-5,0};
-    square1.vertices[2] = (point) {55,5,0};
-    square1.vertices[3] = (point) {45,5,0};
-    square1.col = (color) {255,0,0};
+    // polygon square1;
+    // square1.len = 4;
+    // square1.p = p_horizontal;
+    // square1.vertices = malloc(sizeof(point)*4);
+    // square1.vertices[0] = (point) {45,-5,0};
+    // square1.vertices[1] = (point) {55,-5,0};
+    // square1.vertices[2] = (point) {55,5,0};
+    // square1.vertices[3] = (point) {45,5,0};
+    // square1.col = (color) {255,0,0};
 
-    polygon sq2;
-    sq2.len = 4;
-    sq2.p = p_vert2;
-    sq2.vertices = malloc(sizeof(point)*4);
-    sq2.vertices[0] = (point) {50,-5,-5};
-    sq2.vertices[1] = (point) {50,-5,5};
-    sq2.vertices[2] = (point) {50,5,5};
-    sq2.vertices[3] = (point) {50,5,-5};
-    sq2.col = (color) {0,255,0};
+    // polygon sq2;
+    // sq2.len = 4;
+    // sq2.p = p_vert2;
+    // sq2.vertices = malloc(sizeof(point)*4);
+    // sq2.vertices[0] = (point) {50,-5,-5};
+    // sq2.vertices[1] = (point) {50,-5,5};
+    // sq2.vertices[2] = (point) {50,5,5};
+    // sq2.vertices[3] = (point) {50,5,-5};
+    // sq2.col = (color) {0,255,0};
 
-    polygon rect1;
-    rect1.len = 4;
-    rect1.p = p_vertical;
-    rect1.vertices = malloc(sizeof(point)*4);
-    rect1.vertices[0] = (point) {0,0,-5};
-    rect1.vertices[1] = (point) {0,5,-5};
-    rect1.vertices[2] = (point) {0,5,5};
-    rect1.vertices[3] = (point) {0,0,5};
+    // polygon rect1;
+    // rect1.len = 4;
+    // rect1.p = p_vertical;
+    // rect1.vertices = malloc(sizeof(point)*4);
+    // rect1.vertices[0] = (point) {0,0,-5};
+    // rect1.vertices[1] = (point) {0,5,-5};
+    // rect1.vertices[2] = (point) {0,5,5};
+    // rect1.vertices[3] = (point) {0,0,5};
 
     
 

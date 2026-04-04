@@ -296,7 +296,14 @@ void split_polygon(plane p,polygon* plg,polygon* front,polygon* back){
     }
 
     front->len = len(q_front);
-    if (front->len > 2) front->vertices = malloc(sizeof(point)*front->len);else {(front->vertices = NULL);front->len = 0;}
+    if (front->len > 2) {
+        front->vertices = malloc(sizeof(point)*front->len);
+        front->p = plg->p;
+    }
+    else {
+        (front->vertices = NULL);
+        front->len = 0;
+    }
 
     for (int i = 0;i < front->len;i++){
         point* curr = dequeue(q_front);
@@ -308,7 +315,14 @@ void split_polygon(plane p,polygon* plg,polygon* front,polygon* back){
     free_queue(q_front);
 
     back->len = len(q_back);
-    if (back->len > 2) back->vertices = malloc(sizeof(point)*back->len); else {back->vertices = NULL;back->len = 0;}
+    if (back->len > 2) {
+        back->vertices = malloc(sizeof(point)*back->len); 
+        back->p = plg->p;
+    }
+    else {
+        back->vertices = NULL;
+        back->len = 0;
+    }
     
     for (int i = 0;i < back->len;i++){
         point* curr = dequeue(q_back);
@@ -425,7 +439,7 @@ point_2d projection(point p, int width,int height,player* pl){
 
 }
 
-void fill_triangle(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* renderer){
+void _fill_triangle_outdated(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* renderer){
     double width = (double) w;
     double height = (double) h;
 
@@ -470,6 +484,111 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* r
         //printf("\n");
     }
 }
+
+double min(double a,double b){
+    if (a > b) return b;
+    return a;
+}
+
+double max(double a,double b){
+    if (a > b) return a;
+    return b;
+}
+
+void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_Renderer* renderer){
+    double max_height = (double) max_h;
+    double max_width = (double) max_w;
+    point_2d points[3] = {A,B,C};
+
+    // Sort point
+    for (int i = 1;i < 0;i++){
+        for (int j = i;j<2;j++){
+            if (points[j].x > points[j+1].x){
+                point_2d tmp = points[j];
+                points[j] = points[j+1];
+                points[j+1] = tmp;
+            }
+        }
+    }
+    
+    // Si 0-1 Existe
+    if (points[0].x != points[1].x){
+        double pente_01 = ( points[0].y - points[1].y ) / (points[0].x - points[1].x); //Pente de 0 a 1
+        double pente_02 = ( points[0].y - points[2].y ) / (points[0].x - points[2].x); //Pente de 0 a 2
+        double k_01 = points[0].y - pente_01*points[0].x; //y = pente_01x + k_01
+        double k_02 = points[0].y - pente_02*points[0].x; //y = pente_02x + k_02
+        
+        //Si 1 est en dessous de 0-2 (le coin est vers le bas)
+        if (pente_02*points[1].x + k_02 < points[1].y){
+
+            double min_x = max(points[0].x, 0.0);
+            double max_x = min(points[1].x, max_width); // Min entre x et le bord de la fenetre (= width si x > width)
+            for (double x = min_x; x<max_x ; x++){ // 0 <= X <= Width
+                
+                
+                double min_y = max(pente_02*x + k_02,0.0);// Y est en dessous de 0-2 donc on veut qu'il soit entre 0-2 et le min entre le bas ( h ) et mr bas du triangle
+                double max_y = min(pente_01*x + k_01,max_height);
+                for (double y = min_y; y <= max_y; y++ ){ // 0 <= Y <= max_height
+                    
+                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
+                    else printf("%f, %f", x, y);
+                }
+            }
+        } else { // Y est au dessus de 0-2 ( tete en haut )
+
+            double min_x = max(points[0].x, 0.0);
+            double max_x = min(points[1].x,max_width);
+            for (double x = min_x;x<max_x ;x++){
+                
+                double max_y = min(pente_02*x + k_02,max_height);/// y est au min sur 0-1 et au max sur 0-2 
+                double min_y = max(pente_01*x + k_01,0.0);
+                for (double y = min_y;y <= max_y;y++ ){// 0 <= Y <= max_height
+
+                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
+                    else printf("%f, %f", x, y);
+                }
+            }
+        }
+    } 
+    // Si 1-2 existe
+    if (points[1].x != points[2].x){
+        double pente_12 = ( points[2].y - points[1].y ) / (points[2].x - points[1].x);
+        double pente_02 = ( points[0].y - points[2].y ) / (points[0].x - points[2].x);
+        double k_12 = points[2].y - pente_12 *points[2].x; //y = pente_01x + k_01
+        double k_02 = points[0].y - pente_02 *points[0].x; //y = pente_02x + k_02
+
+        if (pente_02*points[1].x + k_02 < points[1].y){//toujours y tete en bas
+            
+            double max_x = min(points[2].x,max_width);
+            double min_x = max(points[1].x,0.0);
+            for (double x = min_x ;x<max_x ;x++){
+                
+                double max_y = min(max_height,pente_12*x + k_12);
+                double min_y = max(0.0,pente_02*x + k_02);
+                for (double y = min_y;y <= max_y;y++ ){
+                    
+                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
+                    else printf("%f, %f", x, y);
+                }
+            }
+        } else {
+
+            double max_x = min(points[2].x,max_width);
+            double min_x = max(points[1].x,0.0);
+            for (double x = max(points[1].x,0.0) ;x<max_x ;x++){
+                
+                double max_y = min(max_height,pente_02*x + k_02);
+                double min_y = max(0.0,pente_12*x + k_12);
+                for (double y =min_y;y <= max_y;y++ ){
+                    
+                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
+                    else printf("%f, %f", x, y);
+                }
+            }
+        }
+    }
+}
+
 
 
 void show_polygon(player* pl , int width,int height, polygon pol){
