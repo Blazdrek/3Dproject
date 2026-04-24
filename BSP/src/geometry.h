@@ -1,7 +1,7 @@
 #ifndef _GEOMETRY_H_
 #define _GEOMETRY_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 typedef struct point_s {
     double x;

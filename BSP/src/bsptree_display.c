@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "geometry.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +22,6 @@ bsp_tree* create_tree(){
 }
 
 void build_BSP_tree_v1(bsp_tree* t,polygon_list* list){
-    printf("Hello ");
     if (list->size == 1) {
         t->back = NULL;
         t->front = NULL;

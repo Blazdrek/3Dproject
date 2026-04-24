@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <SDL_render.h>
 #include <stdio.h>
 #include <time.h>
@@ -63,12 +63,13 @@ int main(){
     // append(plist,square1);
     // append(plist,sq2);
     build_BSP_tree_v1(bspt,plist);
-    print_bsp_tree(bspt);
 
     bool running = true;
     bool has_moved = true;
     SDL_Event event;
 
+    time_t nb_frame = 0;
+    time_t time_running= time(NULL);
     double pspeed = 1.0;
 
     SDL_RenderPresent(renderer);
@@ -76,6 +77,13 @@ int main(){
     
 
     while (running){
+        nb_frame++;
+        if (time(NULL)-time_running == 1){
+            printf("%d FPS\n",nb_frame);
+            nb_frame = 0;
+            time_running = time(NULL);
+        }
+        nb_frame++;
         while (SDL_PollEvent(&event)) {
             SDL_Keycode key = event.key.keysym.sym;
             if (event.type == SDL_KEYDOWN) {

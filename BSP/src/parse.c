@@ -7,7 +7,7 @@ polygon_list* parse_file(char* file_name){
     FILE *file = fopen(file_name,"r");
     assert(file!=NULL);
     int size;
-    fscanf(file,"%d ",&size);printf("size %d\n",size);
+    fscanf(file,"%d ",&size);
     polygon* plist = malloc(sizeof(polygon)*size);
     for (int i =0;i<size;i++){
         fscanf(file,"%d",&(plist[i].len)); //printf("size %d \n",plist[i].len);

@@ -1,12 +1,12 @@
 #include <stdlib.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
 #include "queue.h"
 
-bool DEBUG_SHOW_POLYGON=true;
+bool DEBUG_SHOW_POLYGON=false;
 
 ///////////////////////////////////////
 //Structures///////////////////////////
@@ -441,6 +441,10 @@ point_2d projection(point p, int width,int height,player* pl){
 
 }
 
+point_2d new_projection(point p, int width,int height,player* pl){
+    double r = (double) width / 2 * pl->tanHalf_Fov;
+}
+
 void _fill_triangle_outdated(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* renderer){
     double width = (double) w;
     double height = (double) h;
@@ -514,7 +518,7 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
     }
     
     // Si 0-1 Existe
-    if (points[0].x != points[1].x){
+    if (d_abs(points[0].x - points[1].x) >1){
         double pente_01 = ( points[0].y - points[1].y ) / (points[0].x - points[1].x); //Pente de 0 a 1
         double pente_02 = ( points[0].y - points[2].y ) / (points[0].x - points[2].x); //Pente de 0 a 2
 
@@ -553,8 +557,8 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
             }
         }
     } 
-    // Si 1-2 existe
-    if (points[1].x != points[2].x){
+    // Si 1-2 
+    if (d_abs(points[1].x -points[2].x) > 1){
         double pente_12 = ( points[2].y - points[1].y ) / (points[2].x - points[1].x);
         double pente_02 = ( points[0].y - points[2].y ) / (points[0].x - points[2].x);
         double k_12 = points[2].y - pente_12 *points[2].x; //y = pente_01x + k_01
