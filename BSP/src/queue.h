@@ -1,6 +1,8 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#include "mega.h"
+
 typedef struct queue_s queue;
 queue* create_queue();
 int enqueue(queue* q,void* elt);
