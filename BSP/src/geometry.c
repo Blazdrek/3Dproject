@@ -1,81 +1,7 @@
-#include <stdlib.h>
-#include <SDL.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <math.h>
-#include <assert.h>
-#include "queue.h"
+#include "geometry.h"
 
 bool DEBUG_SHOW_POLYGON=false;
 
-///////////////////////////////////////
-//Structures///////////////////////////
-///////////////////////////////////////
-
-typedef struct point_s {
-    double x;
-    double y;
-    double z;
-} point ;
-typedef point vector;
-
-typedef struct point_2d_s {
-    double x;
-    double y;
-} point_2d;
-
-typedef struct player_s {
-    point coord;
-    double angle_x;
-    double angle_y;
-    double angle_z;
-    double FOV;
-    double tanHalf_Fov;
-    SDL_Renderer* renderer;
-} player ;
-
-typedef struct object_s {
-    int nb_points;
-    point* points;
-    int** graph;
-} object ;
-
-typedef struct display_s {
-    int height;
-    int width;
-} display ;
-
-typedef struct color_s{// R, G, B
-    int r;
-    int g;
-    int b;
-} color;
-
-typedef struct line_s {
-    point a;
-    vector v;
-} line;
-
-typedef struct plane_s { //ax + by + cz + d = 0
-    double a;
-    double b;
-    double c;
-    double d;
-} plane ;
-
-typedef struct polygon_s {
-    plane p;
-    color col;
-    point* vertices;
-    int len;
-    
-} polygon;
-
-typedef struct polygon_list_s {
-    polygon* list;
-    int size;
-    int MAX_SIZE;
-} polygon_list;
 
 ///////////////////////////////////////
 //Functions ///////////////////////////
@@ -441,6 +367,7 @@ point_2d projection(point p, int width,int height,player* pl){
 
 }
 
+// TODO : Pas de return chef
 point_2d new_projection(point p, int width,int height,player* pl){
     double r = (double) width / 2 * pl->tanHalf_Fov;
 }

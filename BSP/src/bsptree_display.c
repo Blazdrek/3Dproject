@@ -1,18 +1,7 @@
-#include <SDL.h>
-#include "geometry.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <stdbool.h>
+#include "bsptree_display.h"
 
 bool DEBUG_SPLIT_TREE = true;
 
-typedef struct bsp_tree_s {
-    struct bsp_tree_s* front;
-    struct bsp_tree_s* back;
-    plane p;
-    polygon_list* coincidents;
-} bsp_tree;
 
 bsp_tree* create_tree(){
     bsp_tree* t = malloc(sizeof(bsp_tree));

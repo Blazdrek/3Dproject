@@ -1,7 +1,7 @@
-#ifndef _GEOMETRY_H_
-#define _GEOMETRY_H_
+#pragma once
 
-#include <SDL.h>
+#include "mega.h"
+#include "queue.h"
 
 typedef struct point_s {
     double x;
@@ -94,9 +94,3 @@ void rotate_y(object ob,double angle);
 void fill_triangle(point_2d A,point_2d B,point_2d C, int width,int height,SDL_Renderer* renderer);
 point relative_pos(point p,player* pl);
 point_2d projection(point p, int width,int height,player* pl);
-
-
-
-
-
-#endif

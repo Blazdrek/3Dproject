@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
+#include "queue.h"
 
 typedef struct queue_s {
     int start;

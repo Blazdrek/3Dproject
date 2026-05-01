@@ -1,13 +1,4 @@
-#include <SDL.h>
-#include <SDL_render.h>
-#include <stdio.h>
-#include <time.h>
-#include <unistd.h>
-#include <stdbool.h>
-#include <assert.h>
-#include "geometry.h"
-#include "bsptree_display.h"
-#include "parse.h"
+#include "main.h"
 
 int main(){
     
@@ -79,7 +70,7 @@ int main(){
     while (running){
         nb_frame++;
         if (time(NULL)-time_running == 1){
-            printf("%d FPS\n",nb_frame);
+            printf("%ld FPS\n",nb_frame);
             nb_frame = 0;
             time_running = time(NULL);
         }

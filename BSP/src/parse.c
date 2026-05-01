@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include "geometry.h"
+#include "parse.h"
 
 polygon_list* parse_file(char* file_name){
     FILE *file = fopen(file_name,"r");
