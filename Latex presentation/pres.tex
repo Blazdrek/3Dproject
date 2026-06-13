@@ -1,0 +1,43 @@
+\documentclass{beamer}
+
+% Thème visuel
+\usetheme{Madrid}       % ou Berlin, Copenhagen, etc.
+\usecolortheme{default}
+
+% Métadonnées
+\title{Titre de ma présentation}
+\author{Ton Nom}
+\date{\today}
+
+\begin{document}
+
+% Diapo titre
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Sommaire
+\begin{frame}{Plan}
+  \tableofcontents
+\end{frame}
+
+% Section et diapo
+\section{Introduction}
+\begin{frame}{Ma première diapo}
+  \begin{itemize}
+    \item Premier point
+    \item Deuxième point
+    \item Troisième point
+  \end{itemize}
+\end{frame}
+
+% Diapo avec deux colonnes
+\begin{frame}{Deux colonnes}
+  \begin{columns}
+    \column{0.5\textwidth}
+      Texte à gauche
+    \column{0.5\textwidth}
+      Texte à droite
+  \end{columns}
+\end{frame}
+\end{document}

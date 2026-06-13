@@ -30,6 +30,7 @@ typedef struct object_s {
 typedef struct display_s {
     int height;
     int width;
+    color** col_matrix;
 } display ;
 
 typedef struct point_2d_s {
@@ -84,6 +85,9 @@ vector get_orthogonal(plane s);
 plane get_plane_passing_by(point a,point b,point c);
 line get_line_passing(point a,point b);
 point intersect(plane p,line d);
+display* display_create(int width,int height);
+void display_fill(display *d,color c);
+void display_show(SDL_Renderer *r,display *d);
 void split_polygon(plane p,polygon* plg,polygon* front_p,polygon* back_p);
 void show_polygon(player* pl , int width,int height,polygon pol);
 

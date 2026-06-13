@@ -1,6 +1,6 @@
 #include "geometry.h"
 
-bool DEBUG_SHOW_POLYGON=false;
+bool DEBUG_SHOW_POLYGON=true;
 
 
 ///////////////////////////////////////
@@ -153,6 +153,23 @@ point intersect(plane p,line d){
     pt.z = d.a.z + k * d.v.z;
     return pt;  
 }
+
+display* display_create(int width,int height){
+    display* d = malloc(sizeof(display));
+    d->col_matrix = malloc(sizeof(color*)*width);
+    for (int i = 0 ;i < width;i++) d->col_matrix[i] = malloc(sizeof(color));
+    return d;
+}
+
+void display_fill(display *d,color c){
+    for (int i = 0;i < d->width;i++){
+        for (int j = 0; j<d->height;j++){
+            d->col_matrix[i][j] = c;
+        }
+    }
+}
+
+void display_show(SDL_Renderer)
 
 
 
@@ -372,7 +389,7 @@ point_2d new_projection(point p, int width,int height,player* pl){
     double r = (double) width / 2 * pl->tanHalf_Fov;
 }
 
-void _fill_triangle_outdated(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* renderer){
+void fill_triangle_outdated(point_2d A,point_2d B,point_2d C, int w,int h,SDL_Renderer* renderer){
     double width = (double) w;
     double height = (double) h;
 
@@ -400,7 +417,7 @@ void _fill_triangle_outdated(point_2d A,point_2d B,point_2d C, int w,int h,SDL_R
    if (max.x >= width) max.x = width;
    if (max.y >= height) max.y = height;
 
-    double facteur_correctif = 50;
+    double facteur_correctif = 0;
 
     for (double x = min.x ; x< max.x ; x++){
         for (double y = min.y ; y < max.y ; y++){

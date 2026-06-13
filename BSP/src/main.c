@@ -48,7 +48,7 @@ int main(){
     // rect1.vertices[3] = (point) {0,0,5};
 
     
-
+    // polygon_list* plist = create_list();
     bsp_tree* bspt = create_tree();
     polygon_list* plist = parse_file("polygons2.txt");
     // append(plist,square1);
@@ -141,7 +141,7 @@ int main(){
                 break;
             }            
         }
-        if (has_moved){
+        if (true){
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
             SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); 
