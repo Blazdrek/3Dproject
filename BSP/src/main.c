@@ -5,54 +5,22 @@ int main(){
     SDL_Init(SDL_INIT_VIDEO);
     int width = 1000;
     int height = 1000;
+    color black = (color) {0,0,0};
     
-    
-    
+    //Initialisation de la fenetre / de l'arbre bsp / parsing polygone list
     SDL_Window* window = SDL_CreateWindow("SDL sous WSL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window,-1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(renderer, 0, 255 , 255, 1);
 
     player* pl = create_player(120, renderer);
+    display *main_display = display_create(width,height);
+    display *diff_display = display_create(width,height);
+    display_fill(main_display,black);
+    display_fill(diff_display,black);
 
-    plane p_horizontal = (plane) {0,0,1,0};
-    plane p_vertical = (plane) {1,0,0,0};
-    plane p_vert2 = (plane) {1,0,0,-50};
 
-    // polygon square1;
-    // square1.len = 4;
-    // square1.p = p_horizontal;
-    // square1.vertices = malloc(sizeof(point)*4);
-    // square1.vertices[0] = (point) {45,-5,0};
-    // square1.vertices[1] = (point) {55,-5,0};
-    // square1.vertices[2] = (point) {55,5,0};
-    // square1.vertices[3] = (point) {45,5,0};
-    // square1.col = (color) {255,0,0};
-
-    // polygon sq2;
-    // sq2.len = 4;
-    // sq2.p = p_vert2;
-    // sq2.vertices = malloc(sizeof(point)*4);
-    // sq2.vertices[0] = (point) {50,-5,-5};
-    // sq2.vertices[1] = (point) {50,-5,5};
-    // sq2.vertices[2] = (point) {50,5,5};
-    // sq2.vertices[3] = (point) {50,5,-5};
-    // sq2.col = (color) {0,255,0};
-
-    // polygon rect1;
-    // rect1.len = 4;
-    // rect1.p = p_vertical;
-    // rect1.vertices = malloc(sizeof(point)*4);
-    // rect1.vertices[0] = (point) {0,0,-5};
-    // rect1.vertices[1] = (point) {0,5,-5};
-    // rect1.vertices[2] = (point) {0,5,5};
-    // rect1.vertices[3] = (point) {0,0,5};
-
-    
-    // polygon_list* plist = create_list();
     bsp_tree* bspt = create_tree();
     polygon_list* plist = parse_file("polygons2.txt");
-    // append(plist,square1);
-    // append(plist,sq2);
     build_BSP_tree_v1(bspt,plist);
 
     bool running = true;
@@ -142,10 +110,11 @@ int main(){
             }            
         }
         if (true){
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
             SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); 
-            show_BSP_tree(bspt,width,height,pl);
+            show_BSP_tree(bspt,main_display,pl);
+            display_compare_and_show(pl->renderer,main_display,diff_display);
+            display_copy(main_display,diff_display);
+            display_fill(main,black);
             SDL_RenderPresent(renderer);
             // for (int i = 0;i<4;i++){
             //     point r = relative_pos(sq2.vertices[i],pl);

@@ -27,12 +27,6 @@ typedef struct object_s {
     int** graph;
 } object ;
 
-typedef struct display_s {
-    int height;
-    int width;
-    color** col_matrix;
-} display ;
-
 typedef struct point_2d_s {
     double x;
     double y;
@@ -48,6 +42,12 @@ typedef struct color_s{
     int g;
     int b;
 } color;
+
+typedef struct display_s {
+    int height;
+    int width;
+    color** col_matrix;
+} display ;
 
 typedef struct plane_s { //ax + by + cz + d = 0
     double a;
@@ -87,14 +87,15 @@ line get_line_passing(point a,point b);
 point intersect(plane p,line d);
 display* display_create(int width,int height);
 void display_fill(display *d,color c);
-void display_show(SDL_Renderer *r,display *d);
+void display_copy(display *origin,display *target);
+void display_compare_and_show(SDL_Renderer* r,display *d,display *witness);
 void split_polygon(plane p,polygon* plg,polygon* front_p,polygon* back_p);
-void show_polygon(player* pl , int width,int height,polygon pol);
+void show_polygon(player* pl , display *d ,polygon pol);
 
 player* create_player(double FOV,SDL_Renderer* renderer);
 void move_player(player* p1,double x,double y, double z);
 void rotate_z(object ob,double angle);
 void rotate_y(object ob,double angle);
-void fill_triangle(point_2d A,point_2d B,point_2d C, int width,int height,SDL_Renderer* renderer);
+void fill_triangle(point_2d A,point_2d B,point_2d C,display *disp, color c);
 point relative_pos(point p,player* pl);
 point_2d projection(point p, int width,int height,player* pl);

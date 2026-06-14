@@ -156,8 +156,10 @@ point intersect(plane p,line d){
 
 display* display_create(int width,int height){
     display* d = malloc(sizeof(display));
+    d->width = width;
+    d->height = height;
     d->col_matrix = malloc(sizeof(color*)*width);
-    for (int i = 0 ;i < width;i++) d->col_matrix[i] = malloc(sizeof(color));
+    for (int i = 0 ;i < width;i++) d->col_matrix[i] = malloc(sizeof(color)*height);
     return d;
 }
 
@@ -169,7 +171,26 @@ void display_fill(display *d,color c){
     }
 }
 
-void display_show(SDL_Renderer)
+void display_copy(display *origin,display *target){
+    for (int i = 0;i < origin->width;i++){
+        for (int j = 0; j<origin->height;j++){
+            target->col_matrix[i][j] = origin->col_matrix[i][j];
+        }
+    }
+}
+
+void display_compare_and_show(SDL_Renderer* r,display *d,display *witness){
+    for (int i = 0;i < d->width;i++){
+        for (int j = 0; j<d->height;j++){
+            color c = d->col_matrix[i][j];
+            color c_wit = witness->col_matrix[i][j];
+            if (c.r == c_wit.r &&c.g == c_wit.g &&c.b == c_wit.b){
+                SDL_SetRenderDrawColor(r,c.r,c.g,c.b,1);
+                SDL_RenderDrawPoint(r,i,j);
+            }
+        }
+    }
+}
 
 
 
@@ -445,9 +466,9 @@ double max(double a,double b){
     return b;
 }
 
-void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_Renderer* renderer){
-    double max_height = (double) max_h;
-    double max_width = (double) max_w;
+void fill_triangle(point_2d A,point_2d B,point_2d C,display *disp, color c){
+    double max_height = (double) disp->height;
+    double max_width = (double) disp->width;
     point_2d points[3] = {A,B,C};
 
     // Sort point
@@ -481,7 +502,7 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
                 double max_y = min(pente_01*x + k_01,max_height-1);
                 for (double y = min_y; y <= max_y; y++ ){ // 0 <= Y <= max_height
                     
-                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
+                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {disp->col_matrix[(int) x][(int) y] = c;}
                     else printf("(%f, %f)", x, y);
                 }
             }
@@ -495,7 +516,7 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
                 double min_y = max(pente_01*x + k_01,0.0);
                 for (double y = min_y;y <= max_y;y++ ){// 0 <= Y <= max_height
 
-                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
+                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {disp->col_matrix[(int) x][(int) y] = c;}
                     else printf("[%f, %f]", x, y);
                 }
             }
@@ -518,7 +539,7 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
                 double min_y = max(0.0,pente_02*x + k_02);
                 for (double y = min_y;y <= max_y;y++ ){
                     
-                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
+                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {disp->col_matrix[(int) x][(int) y] = c;}
                     else printf("~%f, %f~", x, y);
                 }
             }
@@ -532,7 +553,7 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
                 double min_y = max(0.0,pente_12*x + k_12);
                 for (double y =min_y;y <= max_y;y++ ){
                     
-                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {SDL_RenderDrawPoint(renderer,(int) x,(int)y);}
+                    if (x>= 0 && y>=0 && x<max_width && y<max_height) {disp->col_matrix[(int) x][(int) y] = c;}
                     else printf("{%f, %f}", x, y);
                 }
             }
@@ -542,12 +563,12 @@ void fill_triangle(point_2d A,point_2d B,point_2d C, int max_w, int max_h, SDL_R
 
 
 
-void show_polygon(player* pl , int width,int height, polygon pol){
+void show_polygon(player* pl , display *d ,polygon pol){
 
     point_2d* p_list = malloc(sizeof(point_2d) * pol.len);
     for (int i = 0; i< pol.len; i++){
         //printf("%d \n",i);
-        p_list[i] = projection(pol.vertices[i],width,height,pl);
+        p_list[i] = projection(pol.vertices[i],d->width,d->height,pl);
         //printf("passé1\n");
         if (i >= 2) {
             if (DEBUG_SHOW_POLYGON) { //change color
@@ -555,8 +576,7 @@ void show_polygon(player* pl , int width,int height, polygon pol){
                     pol.col.g *=0.85;
                     pol.col.b *=0.85;
                 }
-            SDL_SetRenderDrawColor(pl->renderer,pol.col.r,pol.col.g,pol.col.b,1);
-            fill_triangle(p_list[0],p_list[i-1],p_list[i],width,height,pl->renderer);
+            fill_triangle(p_list[0],p_list[i-1],p_list[i],d,pol.col);
         }
     }
     free(p_list);

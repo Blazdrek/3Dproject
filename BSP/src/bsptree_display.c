@@ -63,24 +63,25 @@ void print_bsp_tree(bsp_tree* t){
     if (t->back != NULL) print_bsp_tree(t->back);
 }
 
-void show_BSP_tree(bsp_tree* t,int width,int height,player* pl){
+void show_BSP_tree(bsp_tree* t,display *d,player* pl){
     if (t==NULL) return;
     if (t->back == NULL && t->front == NULL){
-        show_polygon(pl,width,height,get(t->coincidents,0));
+        show_polygon(pl,d,get(t->coincidents,0));
     }
     else {
         double classify_p = belong_to_plane(t->p,pl->coord);
         if (classify_p > 0){
-            show_BSP_tree(t->back,width,height,pl);
-            for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,width,height,get(t->coincidents,i));
-            show_BSP_tree(t->front,width,height,pl);
+            show_BSP_tree(t->back,d,pl);
+            for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,d,get(t->coincidents,i));
+            show_BSP_tree(t->front,d,pl);
         } else if (classify_p < 0){
-            show_BSP_tree(t->front,width,height,pl);
-            for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,width,height,get(t->coincidents,i));
-            show_BSP_tree(t->back,width,height,pl);
+            show_BSP_tree(t->front,d,pl);
+            for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,d,get(t->coincidents,i));
+            show_BSP_tree(t->back,d,pl);
         } else {
-            show_BSP_tree(t->front,width,height,pl);
-            show_BSP_tree(t->back,width,height,pl);
+            show_BSP_tree(t->front,d,pl);
+            show_BSP_tree(t->back,d,pl);
+            for (int i = 0;i < t->coincidents->size;i++) show_polygon(pl,d,get(t->coincidents,i));
         }
     }
 }
